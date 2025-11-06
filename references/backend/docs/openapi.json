@@ -1,2451 +1,2319 @@
 {
-  "openapi": "3.1.0",
-  "info": {
-    "title": "Telegram Paid Subscriber Service",
-    "description": "Multi-user SaaS platform for Telegram channel access management",
-    "version": "2.0.0"
-  },
-  "paths": {
-    "/api/telegram/channels": {
-      "post": {
-        "tags": [
-          "Telegram"
-        ],
-        "summary": "Add Channel",
-        "description": "Add/register a Telegram channel and validate bot permissions.\n\n**Requires Authentication:** Bearer token or X-API-Key header\n\n- Verifies the chat exists (tries provided chat_id; if positive, also tries -100 prefix form)\n- Verifies the bot is administrator and has needed permissions\n- Upserts channel document into DB that the app uses\n- Creates seller_channel entry for multi-tenant isolation",
-        "operationId": "add_channel_api_telegram_channels_post",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Authorization"
-            }
-          },
-          {
-            "name": "X-API-Key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Api-Key"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChannelAddRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StandardResponse_get_telegram_router._locals_.ChannelAddData_"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/telegram/force-remove": {
-      "post": {
-        "tags": [
-          "Telegram"
-        ],
-        "summary": "Force Remove",
-        "description": "Forcefully ban a user from a channel and mark membership expired.\n\n**Requires Authentication:** Bearer token or X-API-Key header\n\n**Seller Ownership Required:** You must own the channel to remove members.\n\nUseful for manual moderation or testing without waiting for the scheduler.",
-        "operationId": "force_remove_api_telegram_force_remove_post",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Authorization"
-            }
-          },
-          {
-            "name": "X-API-Key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Api-Key"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ForceRemoveRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StandardResponse_get_telegram_router._locals_.ForceRemoveData_"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/telegram/grant-access": {
-      "post": {
-        "tags": [
-          "Telegram"
-        ],
-        "summary": "Grant Access",
-        "description": "Grant access to Telegram channels for a user.\n\n**Requires Authentication:** Bearer token or X-API-Key header\n\n**Seller Ownership Required:** You must own all specified channels.\n\nThis endpoint is called after successful payment.\nIt creates or updates memberships and generates invite links.\n\nPeriod end is calculated at 23:59:59 UTC for the requested number of days.",
-        "operationId": "grant_access_api_telegram_grant_access_post",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Authorization"
-            }
-          },
-          {
-            "name": "X-API-Key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Api-Key"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/GrantAccessRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StandardResponse_GrantAccessData_"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/webhooks/telegram/{secret_path}": {
-      "post": {
-        "tags": [
-          "Telegram"
-        ],
-        "summary": "Telegram Webhook",
-        "description": "Handle Telegram webhook updates.\n\nProcesses chat_join_request, chat_member updates, and /start messages.",
-        "operationId": "telegram_webhook_webhooks_telegram__secret_path__post",
-        "parameters": [
-          {
-            "name": "secret_path",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Secret Path"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/sellers/register": {
-      "post": {
-        "tags": [
-          "Sellers",
-          "Sellers"
-        ],
-        "summary": "Register",
-        "description": "Register a new seller account.\n\nCreates a new seller account with email and password. Returns API key for programmatic access.",
-        "operationId": "register_api_sellers_register_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RegisterRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StandardResponse_dict_str__Any__"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/sellers/login": {
-      "post": {
-        "tags": [
-          "Sellers",
-          "Sellers"
-        ],
-        "summary": "Login",
-        "description": "Authenticate a seller and get access tokens.\n\nReturns JWT access and refresh tokens for authenticated requests.",
-        "operationId": "login_api_sellers_login_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoginRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StandardResponse_Token_"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/sellers/me": {
-      "get": {
-        "tags": [
-          "Sellers",
-          "Sellers"
-        ],
-        "summary": "Get Current Seller Info",
-        "description": "Get current seller information.\n\nReturns the authenticated seller's profile information.",
-        "operationId": "get_current_seller_info_api_sellers_me_get",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Authorization"
-            }
-          },
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Api-Key"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StandardResponse_SellerResponse_"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/sellers/stripe-keys": {
-      "post": {
-        "tags": [
-          "Sellers",
-          "Sellers"
-        ],
-        "summary": "Update Stripe Keys",
-        "description": "Update seller's own Stripe API keys.\n\nAllows sellers to use their own Stripe account for customer payments.",
-        "operationId": "update_stripe_keys_api_sellers_stripe_keys_post",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Authorization"
-            }
-          },
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Api-Key"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateStripeKeysRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StandardResponse_dict_str__str__"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/sellers/channels": {
-      "post": {
-        "tags": [
-          "Sellers",
-          "Sellers"
-        ],
-        "summary": "Create Channel",
-        "description": "Create a new channel for the seller.\n\nRegisters a Telegram channel under the seller's account.",
-        "operationId": "create_channel_api_sellers_channels_post",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Authorization"
-            }
-          },
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Api-Key"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateChannelRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StandardResponse_dict_str__Any__"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "tags": [
-          "Sellers",
-          "Sellers"
-        ],
-        "summary": "List Channels",
-        "description": "List all channels for the seller.\n\nReturns all Telegram channels registered under the seller's account.",
-        "operationId": "list_channels_api_sellers_channels_get",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Authorization"
-            }
-          },
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Api-Key"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StandardResponse_list_dict_str__Any___"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/sellers/members": {
-      "get": {
-        "tags": [
-          "Sellers",
-          "Sellers"
-        ],
-        "summary": "List Members",
-        "description": "List members across seller's channels.\n\nReturns members with optional filtering by channel and status.",
-        "operationId": "list_members_api_sellers_members_get",
-        "parameters": [
-          {
-            "name": "chat_id",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Chat Id"
-            }
-          },
-          {
-            "name": "status",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Status"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Authorization"
-            }
-          },
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Api-Key"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StandardResponse_list_dict_str__Any___"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/sellers/stats": {
-      "get": {
-        "tags": [
-          "Sellers",
-          "Sellers"
-        ],
-        "summary": "Get Stats",
-        "description": "Get dashboard statistics for the seller.\n\nReturns overview statistics including channels, members, and revenue.",
-        "operationId": "get_stats_api_sellers_stats_get",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Authorization"
-            }
-          },
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Api-Key"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StandardResponse_dict_str__Any__"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/sellers/webhooks": {
-      "post": {
-        "tags": [
-          "Sellers",
-          "Sellers"
-        ],
-        "summary": "Create Webhook",
-        "description": "Create a webhook configuration.\n\nRegister a webhook URL to receive events about members and payments.",
-        "operationId": "create_webhook_api_sellers_webhooks_post",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Authorization"
-            }
-          },
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Api-Key"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateWebhookRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StandardResponse_dict_str__Any__"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "tags": [
-          "Sellers",
-          "Sellers"
-        ],
-        "summary": "List Webhooks",
-        "description": "List all webhook configurations.\n\nReturns all registered webhooks for the seller.",
-        "operationId": "list_webhooks_api_sellers_webhooks_get",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Authorization"
-            }
-          },
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Api-Key"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StandardResponse_list_dict_str__Any___"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/sellers/payments": {
-      "get": {
-        "tags": [
-          "Sellers",
-          "Sellers"
-        ],
-        "summary": "List Payments",
-        "description": "List payment history for the seller.\n\nReturns recent payments received through the platform.",
-        "operationId": "list_payments_api_sellers_payments_get",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 100,
-              "title": "Limit"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Authorization"
-            }
-          },
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Api-Key"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StandardResponse_list_dict_str__Any___"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/payments/checkout": {
-      "post": {
-        "tags": [
-          "Payments",
-          "Payments"
-        ],
-        "summary": "Create Checkout Session",
-        "description": "Create a Stripe checkout session.\n\nCreates a hosted checkout page for subscriptions or one-time payments.",
-        "operationId": "create_checkout_session_api_payments_checkout_post",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Authorization"
-            }
-          },
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Api-Key"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCheckoutRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StandardResponse_dict_str__str__"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/payments/payment-intent": {
-      "post": {
-        "tags": [
-          "Payments",
-          "Payments"
-        ],
-        "summary": "Create Payment Intent",
-        "description": "Create a Stripe payment intent.\n\nCreates a payment intent for custom payment flows.",
-        "operationId": "create_payment_intent_api_payments_payment_intent_post",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Authorization"
-            }
-          },
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Api-Key"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreatePaymentIntentRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StandardResponse_dict_str__str__"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/payments/webhook": {
-      "post": {
-        "tags": [
-          "Payments",
-          "Payments"
-        ],
-        "summary": "Stripe Webhook",
-        "description": "Handle Stripe webhook events.\n\nReceives and processes events from Stripe (subscriptions, payments, etc.).",
-        "operationId": "stripe_webhook_api_payments_webhook_post",
-        "parameters": [
-          {
-            "name": "stripe-signature",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "title": "Stripe-Signature"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/payments/subscription/{subscription_id}": {
-      "get": {
-        "tags": [
-          "Payments",
-          "Payments"
-        ],
-        "summary": "Get Subscription",
-        "description": "Get subscription details.\n\nRetrieves current subscription status and billing information.",
-        "operationId": "get_subscription_api_payments_subscription__subscription_id__get",
-        "parameters": [
-          {
-            "name": "subscription_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Subscription Id"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Authorization"
-            }
-          },
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Api-Key"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StandardResponse_dict_str__Any__"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/payments/subscription/{subscription_id}/cancel": {
-      "post": {
-        "tags": [
-          "Payments",
-          "Payments"
-        ],
-        "summary": "Cancel Subscription",
-        "description": "Cancel a subscription.\n\nCancels subscription either immediately or at the end of the billing period.",
-        "operationId": "cancel_subscription_api_payments_subscription__subscription_id__cancel_post",
-        "parameters": [
-          {
-            "name": "subscription_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Subscription Id"
-            }
-          },
-          {
-            "name": "at_period_end",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "boolean",
-              "default": true,
-              "title": "At Period End"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Authorization"
-            }
-          },
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "X-Api-Key"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StandardResponse_dict_str__str__"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/health": {
-      "get": {
-        "summary": "Health",
-        "description": "Health check endpoint for Telegram service.\n\nReturns the service health status. Used by load balancers\nand monitoring systems to verify the service is running.\n\nReturns:\n    StandardResponse: Status information with \"status\": \"UP\"",
-        "operationId": "health_health_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StandardResponse_dict_str__str__"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/": {
-      "get": {
-        "summary": "Root",
-        "description": "Root endpoint providing service information.\n\nReturns:\n    StandardResponse: Service name and version information",
-        "operationId": "root__get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StandardResponse_dict_str__str__"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "ChannelAddData": {
-        "properties": {
-          "chat_id": {
-            "type": "integer",
-            "title": "Chat Id"
-          },
-          "stored_chat_id": {
-            "type": "integer",
-            "title": "Stored Chat Id"
-          },
-          "name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Name"
-          },
-          "join_model": {
-            "type": "string",
-            "title": "Join Model"
-          },
-          "checks": {
-            "additionalProperties": true,
-            "type": "object",
-            "title": "Checks"
-          }
-        },
-        "type": "object",
-        "required": [
-          "chat_id",
-          "stored_chat_id",
-          "join_model"
-        ],
-        "title": "ChannelAddData",
-        "description": "Data model for channel add response."
-      },
-      "ChannelAddRequest": {
-        "properties": {
-          "chat_id": {
-            "type": "integer",
-            "title": "Chat Id",
-            "description": "Telegram chat ID (use -100... for channels/supergroups if possible)"
-          },
-          "name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Name",
-            "description": "Friendly channel name"
-          },
-          "join_model": {
-            "type": "string",
-            "enum": [
-              "invite_link",
-              "join_request"
-            ],
-            "title": "Join Model",
-            "description": "How users join the channel",
-            "default": "invite_link"
-          },
-          "invite_ttl_seconds": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Invite Ttl Seconds",
-            "description": "Override default invite TTL (seconds)"
-          },
-          "invite_member_limit": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Invite Member Limit",
-            "description": "Override default invite member limit"
-          }
-        },
-        "type": "object",
-        "required": [
-          "chat_id"
-        ],
-        "title": "ChannelAddRequest",
-        "description": "Request model to add/register a Telegram channel in the system."
-      },
-      "CreateChannelRequest": {
-        "properties": {
-          "chat_id": {
-            "type": "integer",
-            "title": "Chat Id",
-            "description": "Telegram chat ID"
-          },
-          "name": {
-            "type": "string",
-            "title": "Name",
-            "description": "Channel name"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "price_per_month": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Price Per Month",
-            "description": "Price in cents per month"
-          }
-        },
-        "type": "object",
-        "required": [
-          "chat_id",
-          "name"
-        ],
-        "title": "CreateChannelRequest",
-        "description": "Create channel request."
-      },
-      "CreateCheckoutRequest": {
-        "properties": {
-          "price_id": {
-            "type": "string",
-            "title": "Price Id",
-            "description": "Stripe price ID"
-          },
-          "success_url": {
-            "type": "string",
-            "title": "Success Url",
-            "description": "URL to redirect after successful payment"
-          },
-          "cancel_url": {
-            "type": "string",
-            "title": "Cancel Url",
-            "description": "URL to redirect after canceled payment"
-          },
-          "customer_email": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Customer Email",
-            "description": "Customer email"
-          },
-          "metadata": {
-            "anyOf": [
-              {
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Metadata",
-            "description": "Additional metadata"
-          }
-        },
-        "type": "object",
-        "required": [
-          "price_id",
-          "success_url",
-          "cancel_url"
-        ],
-        "title": "CreateCheckoutRequest",
-        "description": "Create checkout session request."
-      },
-      "CreatePaymentIntentRequest": {
-        "properties": {
-          "amount": {
-            "type": "integer",
-            "title": "Amount",
-            "description": "Amount in cents"
-          },
-          "currency": {
-            "type": "string",
-            "title": "Currency",
-            "description": "Currency code",
-            "default": "usd"
-          },
-          "customer_email": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Customer Email",
-            "description": "Customer email"
-          },
-          "metadata": {
-            "anyOf": [
-              {
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Metadata",
-            "description": "Additional metadata"
-          }
-        },
-        "type": "object",
-        "required": [
-          "amount"
-        ],
-        "title": "CreatePaymentIntentRequest",
-        "description": "Create payment intent request."
-      },
-      "CreateWebhookRequest": {
-        "properties": {
-          "url": {
-            "type": "string",
-            "title": "Url",
-            "description": "Webhook URL"
-          },
-          "events": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Events",
-            "description": "Events to subscribe to"
-          }
-        },
-        "type": "object",
-        "required": [
-          "url"
-        ],
-        "title": "CreateWebhookRequest",
-        "description": "Create webhook configuration."
-      },
-      "ErrorDetail": {
-        "properties": {
-          "code": {
-            "type": "string",
-            "title": "Code",
-            "description": "Error code"
-          },
-          "description": {
-            "type": "string",
-            "title": "Description",
-            "description": "Error description"
-          }
-        },
-        "type": "object",
-        "required": [
-          "code",
-          "description"
-        ],
-        "title": "ErrorDetail",
-        "description": "Error detail model."
-      },
-      "ForceRemoveData": {
-        "properties": {
-          "removed": {
-            "type": "boolean",
-            "title": "Removed",
-            "description": "Whether user was removed from chat"
-          },
-          "expired_membership": {
-            "type": "boolean",
-            "title": "Expired Membership",
-            "description": "Whether membership was expired"
-          },
-          "details": {
-            "additionalProperties": true,
-            "type": "object",
-            "title": "Details",
-            "description": "Additional details"
-          }
-        },
-        "type": "object",
-        "required": [
-          "removed",
-          "expired_membership"
-        ],
-        "title": "ForceRemoveData",
-        "description": "Data model for force remove response."
-      },
-      "ForceRemoveRequest": {
-        "properties": {
-          "ext_user_id": {
-            "type": "string",
-            "title": "Ext User Id",
-            "description": "External user ID"
-          },
-          "chat_id": {
-            "type": "integer",
-            "title": "Chat Id",
-            "description": "Telegram chat ID (-100 form for channels)"
-          },
-          "reason": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Reason",
-            "description": "Reason for removal (for audit)"
-          },
-          "dry_run": {
-            "type": "boolean",
-            "title": "Dry Run",
-            "description": "If true, only report what would happen",
-            "default": false
-          }
-        },
-        "type": "object",
-        "required": [
-          "ext_user_id",
-          "chat_id"
-        ],
-        "title": "ForceRemoveRequest",
-        "description": "Force remove a user from a Telegram channel and expire membership."
-      },
-      "GrantAccessData": {
-        "properties": {
-          "user_id": {
-            "type": "string",
-            "title": "User Id",
-            "description": "Internal user ID"
-          },
-          "invites": {
-            "additionalProperties": {
-              "type": "string"
-            },
-            "type": "object",
-            "title": "Invites",
-            "description": "Map of chat_id to invite_link or join instruction"
-          },
-          "period_end": {
-            "type": "string",
-            "title": "Period End",
-            "description": "Period end datetime in UTC (ISO format)"
-          },
-          "errors": {
-            "anyOf": [
-              {
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Errors",
-            "description": "Map of chat_id to error description if any failed"
-          }
-        },
-        "type": "object",
-        "required": [
-          "user_id",
-          "invites",
-          "period_end"
-        ],
-        "title": "GrantAccessData",
-        "description": "Data model for grant access response."
-      },
-      "GrantAccessRequest": {
-        "properties": {
-          "ext_user_id": {
-            "type": "string",
-            "title": "Ext User Id",
-            "description": "External user ID from payment system"
-          },
-          "chat_ids": {
-            "items": {
-              "type": "integer"
-            },
-            "type": "array",
-            "title": "Chat Ids",
-            "description": "List of chat IDs to grant access to"
-          },
-          "period_days": {
-            "type": "integer",
-            "title": "Period Days",
-            "description": "Number of days of access"
-          },
-          "ref": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Ref",
-            "description": "Payment reference ID"
-          }
-        },
-        "type": "object",
-        "required": [
-          "ext_user_id",
-          "chat_ids",
-          "period_days"
-        ],
-        "title": "GrantAccessRequest",
-        "description": "Request model for granting access."
-      },
-      "HTTPValidationError": {
-        "properties": {
-          "detail": {
-            "items": {
-              "$ref": "#/components/schemas/ValidationError"
-            },
-            "type": "array",
-            "title": "Detail"
-          }
-        },
-        "type": "object",
-        "title": "HTTPValidationError"
-      },
-      "LoginRequest": {
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "title": "Email"
-          },
-          "password": {
-            "type": "string",
-            "title": "Password"
-          }
-        },
-        "type": "object",
-        "required": [
-          "email",
-          "password"
-        ],
-        "title": "LoginRequest",
-        "description": "Seller login request."
-      },
-      "RegisterRequest": {
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "title": "Email"
-          },
-          "password": {
-            "type": "string",
-            "minLength": 8,
-            "title": "Password"
-          },
-          "company_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Company Name"
-          }
-        },
-        "type": "object",
-        "required": [
-          "email",
-          "password"
-        ],
-        "title": "RegisterRequest",
-        "description": "Seller registration request."
-      },
-      "SellerResponse": {
-        "properties": {
-          "id": {
-            "type": "string",
-            "title": "Id"
-          },
-          "email": {
-            "type": "string",
-            "title": "Email"
-          },
-          "company_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Company Name"
-          },
-          "is_active": {
-            "type": "boolean",
-            "title": "Is Active"
-          },
-          "is_verified": {
-            "type": "boolean",
-            "title": "Is Verified"
-          },
-          "subscription_status": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Subscription Status"
-          },
-          "created_at": {
-            "type": "string",
-            "title": "Created At"
-          },
-          "last_login": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Last Login"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "email",
-          "company_name",
-          "is_active",
-          "is_verified",
-          "subscription_status",
-          "created_at",
-          "last_login"
-        ],
-        "title": "SellerResponse",
-        "description": "Seller information response."
-      },
-      "StandardResponse_GrantAccessData_": {
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "title": "Success",
-            "description": "Whether the request was successful"
-          },
-          "message": {
-            "type": "string",
-            "title": "Message",
-            "description": "Human-readable message"
-          },
-          "data": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/GrantAccessData"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Response data"
-          },
-          "error": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ErrorDetail"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Error details if unsuccessful"
-          }
-        },
-        "type": "object",
-        "required": [
-          "success",
-          "message"
-        ],
-        "title": "StandardResponse[GrantAccessData]"
-      },
-      "StandardResponse_SellerResponse_": {
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "title": "Success",
-            "description": "Whether the request was successful"
-          },
-          "message": {
-            "type": "string",
-            "title": "Message",
-            "description": "Human-readable message"
-          },
-          "data": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/SellerResponse"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Response data"
-          },
-          "error": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ErrorDetail"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Error details if unsuccessful"
-          }
-        },
-        "type": "object",
-        "required": [
-          "success",
-          "message"
-        ],
-        "title": "StandardResponse[SellerResponse]"
-      },
-      "StandardResponse_Token_": {
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "title": "Success",
-            "description": "Whether the request was successful"
-          },
-          "message": {
-            "type": "string",
-            "title": "Message",
-            "description": "Human-readable message"
-          },
-          "data": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/Token"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Response data"
-          },
-          "error": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ErrorDetail"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Error details if unsuccessful"
-          }
-        },
-        "type": "object",
-        "required": [
-          "success",
-          "message"
-        ],
-        "title": "StandardResponse[Token]"
-      },
-      "StandardResponse_dict_str__Any__": {
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "title": "Success",
-            "description": "Whether the request was successful"
-          },
-          "message": {
-            "type": "string",
-            "title": "Message",
-            "description": "Human-readable message"
-          },
-          "data": {
-            "anyOf": [
-              {
-                "additionalProperties": true,
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Data",
-            "description": "Response data"
-          },
-          "error": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ErrorDetail"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Error details if unsuccessful"
-          }
-        },
-        "type": "object",
-        "required": [
-          "success",
-          "message"
-        ],
-        "title": "StandardResponse[dict[str, Any]]"
-      },
-      "StandardResponse_dict_str__str__": {
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "title": "Success",
-            "description": "Whether the request was successful"
-          },
-          "message": {
-            "type": "string",
-            "title": "Message",
-            "description": "Human-readable message"
-          },
-          "data": {
-            "anyOf": [
-              {
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Data",
-            "description": "Response data"
-          },
-          "error": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ErrorDetail"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Error details if unsuccessful"
-          }
-        },
-        "type": "object",
-        "required": [
-          "success",
-          "message"
-        ],
-        "title": "StandardResponse[dict[str, str]]"
-      },
-      "StandardResponse_get_telegram_router._locals_.ChannelAddData_": {
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "title": "Success",
-            "description": "Whether the request was successful"
-          },
-          "message": {
-            "type": "string",
-            "title": "Message",
-            "description": "Human-readable message"
-          },
-          "data": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ChannelAddData"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Response data"
-          },
-          "error": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ErrorDetail"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Error details if unsuccessful"
-          }
-        },
-        "type": "object",
-        "required": [
-          "success",
-          "message"
-        ],
-        "title": "StandardResponse[get_telegram_router.<locals>.ChannelAddData]"
-      },
-      "StandardResponse_get_telegram_router._locals_.ForceRemoveData_": {
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "title": "Success",
-            "description": "Whether the request was successful"
-          },
-          "message": {
-            "type": "string",
-            "title": "Message",
-            "description": "Human-readable message"
-          },
-          "data": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ForceRemoveData"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Response data"
-          },
-          "error": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ErrorDetail"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Error details if unsuccessful"
-          }
-        },
-        "type": "object",
-        "required": [
-          "success",
-          "message"
-        ],
-        "title": "StandardResponse[get_telegram_router.<locals>.ForceRemoveData]"
-      },
-      "StandardResponse_list_dict_str__Any___": {
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "title": "Success",
-            "description": "Whether the request was successful"
-          },
-          "message": {
-            "type": "string",
-            "title": "Message",
-            "description": "Human-readable message"
-          },
-          "data": {
-            "anyOf": [
-              {
-                "items": {
-                  "additionalProperties": true,
-                  "type": "object"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Data",
-            "description": "Response data"
-          },
-          "error": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ErrorDetail"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Error details if unsuccessful"
-          }
-        },
-        "type": "object",
-        "required": [
-          "success",
-          "message"
-        ],
-        "title": "StandardResponse[list[dict[str, Any]]]"
-      },
-      "Token": {
-        "properties": {
-          "access_token": {
-            "type": "string",
-            "title": "Access Token"
-          },
-          "refresh_token": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Refresh Token"
-          },
-          "token_type": {
-            "type": "string",
-            "title": "Token Type",
-            "default": "bearer"
-          }
-        },
-        "type": "object",
-        "required": [
-          "access_token"
-        ],
-        "title": "Token",
-        "description": "JWT token response."
-      },
-      "UpdateStripeKeysRequest": {
-        "properties": {
-          "publishable_key": {
-            "type": "string",
-            "title": "Publishable Key"
-          },
-          "secret_key": {
-            "type": "string",
-            "title": "Secret Key"
-          }
-        },
-        "type": "object",
-        "required": [
-          "publishable_key",
-          "secret_key"
-        ],
-        "title": "UpdateStripeKeysRequest",
-        "description": "Update seller's Stripe keys."
-      },
-      "ValidationError": {
-        "properties": {
-          "loc": {
-            "items": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "integer"
-                }
-              ]
-            },
-            "type": "array",
-            "title": "Location"
-          },
-          "msg": {
-            "type": "string",
-            "title": "Message"
-          },
-          "type": {
-            "type": "string",
-            "title": "Error Type"
-          }
-        },
-        "type": "object",
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
-        "title": "ValidationError"
-      }
-    }
-  }
+	"openapi": "3.1.0",
+	"info": {
+		"title": "Telegram Paid Subscriber Service",
+		"description": "Multi-user SaaS platform for Telegram channel access management",
+		"version": "2.0.0"
+	},
+	"paths": {
+		"/api/telegram/channels": {
+			"post": {
+				"tags": ["Telegram"],
+				"summary": "Add Channel",
+				"description": "Add/register a Telegram channel and validate bot permissions.\n\n**Requires Authentication:** Bearer token or X-API-Key header\n\n- Verifies the chat exists (tries provided chat_id; if positive, also tries -100 prefix form)\n- Verifies the bot is administrator and has needed permissions\n- Upserts channel document into DB that the app uses\n- Creates seller_channel entry for multi-tenant isolation",
+				"operationId": "add_channel_api_telegram_channels_post",
+				"parameters": [
+					{
+						"name": "authorization",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "Authorization"
+						}
+					},
+					{
+						"name": "X-API-Key",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "X-Api-Key"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ChannelAddRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StandardResponse_get_telegram_router._locals_.ChannelAddData_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPValidationError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/telegram/force-remove": {
+			"post": {
+				"tags": ["Telegram"],
+				"summary": "Force Remove",
+				"description": "Forcefully ban a user from a channel and mark membership expired.\n\n**Requires Authentication:** Bearer token or X-API-Key header\n\n**Seller Ownership Required:** You must own the channel to remove members.\n\nUseful for manual moderation or testing without waiting for the scheduler.",
+				"operationId": "force_remove_api_telegram_force_remove_post",
+				"parameters": [
+					{
+						"name": "authorization",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "Authorization"
+						}
+					},
+					{
+						"name": "X-API-Key",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "X-Api-Key"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ForceRemoveRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StandardResponse_get_telegram_router._locals_.ForceRemoveData_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPValidationError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/telegram/grant-access": {
+			"post": {
+				"tags": ["Telegram"],
+				"summary": "Grant Access",
+				"description": "Grant access to Telegram channels for a user.\n\n**Requires Authentication:** Bearer token or X-API-Key header\n\n**Seller Ownership Required:** You must own all specified channels.\n\nThis endpoint is called after successful payment.\nIt creates or updates memberships and generates invite links.\n\nPeriod end is calculated at 23:59:59 UTC for the requested number of days.",
+				"operationId": "grant_access_api_telegram_grant_access_post",
+				"parameters": [
+					{
+						"name": "authorization",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "Authorization"
+						}
+					},
+					{
+						"name": "X-API-Key",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "X-Api-Key"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/GrantAccessRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StandardResponse_GrantAccessData_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPValidationError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/webhooks/telegram/{secret_path}": {
+			"post": {
+				"tags": ["Telegram"],
+				"summary": "Telegram Webhook",
+				"description": "Handle Telegram webhook updates.\n\nProcesses chat_join_request, chat_member updates, and /start messages.",
+				"operationId": "telegram_webhook_webhooks_telegram__secret_path__post",
+				"parameters": [
+					{
+						"name": "secret_path",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"title": "Secret Path"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPValidationError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/sellers/register": {
+			"post": {
+				"tags": ["Sellers", "Sellers"],
+				"summary": "Register",
+				"description": "Register a new seller account.\n\nCreates a new seller account with email and password. Returns API key for programmatic access.",
+				"operationId": "register_api_sellers_register_post",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RegisterRequest"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StandardResponse_dict_str__Any__"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPValidationError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/sellers/login": {
+			"post": {
+				"tags": ["Sellers", "Sellers"],
+				"summary": "Login",
+				"description": "Authenticate a seller and get access tokens.\n\nReturns JWT access and refresh tokens for authenticated requests.",
+				"operationId": "login_api_sellers_login_post",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LoginRequest"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StandardResponse_Token_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPValidationError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/sellers/me": {
+			"get": {
+				"tags": ["Sellers", "Sellers"],
+				"summary": "Get Current Seller Info",
+				"description": "Get current seller information.\n\nReturns the authenticated seller's profile information.",
+				"operationId": "get_current_seller_info_api_sellers_me_get",
+				"parameters": [
+					{
+						"name": "authorization",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "Authorization"
+						}
+					},
+					{
+						"name": "x-api-key",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "X-Api-Key"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StandardResponse_SellerResponse_"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPValidationError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/sellers/stripe-keys": {
+			"post": {
+				"tags": ["Sellers", "Sellers"],
+				"summary": "Update Stripe Keys",
+				"description": "Update seller's own Stripe API keys.\n\nAllows sellers to use their own Stripe account for customer payments.",
+				"operationId": "update_stripe_keys_api_sellers_stripe_keys_post",
+				"parameters": [
+					{
+						"name": "authorization",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "Authorization"
+						}
+					},
+					{
+						"name": "x-api-key",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "X-Api-Key"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateStripeKeysRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StandardResponse_dict_str__str__"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPValidationError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/sellers/channels": {
+			"post": {
+				"tags": ["Sellers", "Sellers"],
+				"summary": "Create Channel",
+				"description": "Create a new channel for the seller.\n\nRegisters a Telegram channel under the seller's account.",
+				"operationId": "create_channel_api_sellers_channels_post",
+				"parameters": [
+					{
+						"name": "authorization",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "Authorization"
+						}
+					},
+					{
+						"name": "x-api-key",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "X-Api-Key"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateChannelRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StandardResponse_dict_str__Any__"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPValidationError"
+								}
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"tags": ["Sellers", "Sellers"],
+				"summary": "List Channels",
+				"description": "List all channels for the seller.\n\nReturns all Telegram channels registered under the seller's account.",
+				"operationId": "list_channels_api_sellers_channels_get",
+				"parameters": [
+					{
+						"name": "authorization",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "Authorization"
+						}
+					},
+					{
+						"name": "x-api-key",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "X-Api-Key"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StandardResponse_list_dict_str__Any___"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPValidationError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/sellers/members": {
+			"get": {
+				"tags": ["Sellers", "Sellers"],
+				"summary": "List Members",
+				"description": "List members across seller's channels.\n\nReturns members with optional filtering by channel and status.",
+				"operationId": "list_members_api_sellers_members_get",
+				"parameters": [
+					{
+						"name": "chat_id",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "integer"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "Chat Id"
+						}
+					},
+					{
+						"name": "status",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "Status"
+						}
+					},
+					{
+						"name": "authorization",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "Authorization"
+						}
+					},
+					{
+						"name": "x-api-key",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "X-Api-Key"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StandardResponse_list_dict_str__Any___"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPValidationError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/sellers/stats": {
+			"get": {
+				"tags": ["Sellers", "Sellers"],
+				"summary": "Get Stats",
+				"description": "Get dashboard statistics for the seller.\n\nReturns overview statistics including channels, members, and revenue.",
+				"operationId": "get_stats_api_sellers_stats_get",
+				"parameters": [
+					{
+						"name": "authorization",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "Authorization"
+						}
+					},
+					{
+						"name": "x-api-key",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "X-Api-Key"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StandardResponse_dict_str__Any__"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPValidationError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/sellers/webhooks": {
+			"post": {
+				"tags": ["Sellers", "Sellers"],
+				"summary": "Create Webhook",
+				"description": "Create a webhook configuration.\n\nRegister a webhook URL to receive events about members and payments.",
+				"operationId": "create_webhook_api_sellers_webhooks_post",
+				"parameters": [
+					{
+						"name": "authorization",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "Authorization"
+						}
+					},
+					{
+						"name": "x-api-key",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "X-Api-Key"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateWebhookRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StandardResponse_dict_str__Any__"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPValidationError"
+								}
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"tags": ["Sellers", "Sellers"],
+				"summary": "List Webhooks",
+				"description": "List all webhook configurations.\n\nReturns all registered webhooks for the seller.",
+				"operationId": "list_webhooks_api_sellers_webhooks_get",
+				"parameters": [
+					{
+						"name": "authorization",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "Authorization"
+						}
+					},
+					{
+						"name": "x-api-key",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "X-Api-Key"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StandardResponse_list_dict_str__Any___"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPValidationError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/sellers/payments": {
+			"get": {
+				"tags": ["Sellers", "Sellers"],
+				"summary": "List Payments",
+				"description": "List payment history for the seller.\n\nReturns recent payments received through the platform.",
+				"operationId": "list_payments_api_sellers_payments_get",
+				"parameters": [
+					{
+						"name": "limit",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "integer",
+							"default": 100,
+							"title": "Limit"
+						}
+					},
+					{
+						"name": "authorization",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "Authorization"
+						}
+					},
+					{
+						"name": "x-api-key",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "X-Api-Key"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StandardResponse_list_dict_str__Any___"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPValidationError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/payments/checkout": {
+			"post": {
+				"tags": ["Payments", "Payments"],
+				"summary": "Create Checkout Session",
+				"description": "Create a Stripe checkout session.\n\nCreates a hosted checkout page for subscriptions or one-time payments.",
+				"operationId": "create_checkout_session_api_payments_checkout_post",
+				"parameters": [
+					{
+						"name": "authorization",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "Authorization"
+						}
+					},
+					{
+						"name": "x-api-key",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "X-Api-Key"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateCheckoutRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StandardResponse_dict_str__str__"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPValidationError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/payments/payment-intent": {
+			"post": {
+				"tags": ["Payments", "Payments"],
+				"summary": "Create Payment Intent",
+				"description": "Create a Stripe payment intent.\n\nCreates a payment intent for custom payment flows.",
+				"operationId": "create_payment_intent_api_payments_payment_intent_post",
+				"parameters": [
+					{
+						"name": "authorization",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "Authorization"
+						}
+					},
+					{
+						"name": "x-api-key",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "X-Api-Key"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreatePaymentIntentRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StandardResponse_dict_str__str__"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPValidationError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/payments/webhook": {
+			"post": {
+				"tags": ["Payments", "Payments"],
+				"summary": "Stripe Webhook",
+				"description": "Handle Stripe webhook events.\n\nReceives and processes events from Stripe (subscriptions, payments, etc.).",
+				"operationId": "stripe_webhook_api_payments_webhook_post",
+				"parameters": [
+					{
+						"name": "stripe-signature",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"title": "Stripe-Signature"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPValidationError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/payments/subscription/{subscription_id}": {
+			"get": {
+				"tags": ["Payments", "Payments"],
+				"summary": "Get Subscription",
+				"description": "Get subscription details.\n\nRetrieves current subscription status and billing information.",
+				"operationId": "get_subscription_api_payments_subscription__subscription_id__get",
+				"parameters": [
+					{
+						"name": "subscription_id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"title": "Subscription Id"
+						}
+					},
+					{
+						"name": "authorization",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "Authorization"
+						}
+					},
+					{
+						"name": "x-api-key",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "X-Api-Key"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StandardResponse_dict_str__Any__"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPValidationError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/payments/subscription/{subscription_id}/cancel": {
+			"post": {
+				"tags": ["Payments", "Payments"],
+				"summary": "Cancel Subscription",
+				"description": "Cancel a subscription.\n\nCancels subscription either immediately or at the end of the billing period.",
+				"operationId": "cancel_subscription_api_payments_subscription__subscription_id__cancel_post",
+				"parameters": [
+					{
+						"name": "subscription_id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"title": "Subscription Id"
+						}
+					},
+					{
+						"name": "at_period_end",
+						"in": "query",
+						"required": false,
+						"schema": {
+							"type": "boolean",
+							"default": true,
+							"title": "At Period End"
+						}
+					},
+					{
+						"name": "authorization",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "Authorization"
+						}
+					},
+					{
+						"name": "x-api-key",
+						"in": "header",
+						"required": false,
+						"schema": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "null"
+								}
+							],
+							"title": "X-Api-Key"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StandardResponse_dict_str__str__"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Validation Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPValidationError"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/health": {
+			"get": {
+				"summary": "Health",
+				"description": "Health check endpoint for Telegram service.\n\nReturns the service health status. Used by load balancers\nand monitoring systems to verify the service is running.\n\nReturns:\n    StandardResponse: Status information with \"status\": \"UP\"",
+				"operationId": "health_health_get",
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StandardResponse_dict_str__str__"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/": {
+			"get": {
+				"summary": "Root",
+				"description": "Root endpoint providing service information.\n\nReturns:\n    StandardResponse: Service name and version information",
+				"operationId": "root__get",
+				"responses": {
+					"200": {
+						"description": "Successful Response",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/StandardResponse_dict_str__str__"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"ChannelAddData": {
+				"properties": {
+					"chat_id": {
+						"type": "integer",
+						"title": "Chat Id"
+					},
+					"stored_chat_id": {
+						"type": "integer",
+						"title": "Stored Chat Id"
+					},
+					"name": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Name"
+					},
+					"join_model": {
+						"type": "string",
+						"title": "Join Model"
+					},
+					"checks": {
+						"additionalProperties": true,
+						"type": "object",
+						"title": "Checks"
+					}
+				},
+				"type": "object",
+				"required": ["chat_id", "stored_chat_id", "join_model"],
+				"title": "ChannelAddData",
+				"description": "Data model for channel add response."
+			},
+			"ChannelAddRequest": {
+				"properties": {
+					"chat_id": {
+						"type": "integer",
+						"title": "Chat Id",
+						"description": "Telegram chat ID (use -100... for channels/supergroups if possible)"
+					},
+					"name": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Name",
+						"description": "Friendly channel name"
+					},
+					"join_model": {
+						"type": "string",
+						"enum": ["invite_link", "join_request"],
+						"title": "Join Model",
+						"description": "How users join the channel",
+						"default": "invite_link"
+					},
+					"invite_ttl_seconds": {
+						"anyOf": [
+							{
+								"type": "integer"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Invite Ttl Seconds",
+						"description": "Override default invite TTL (seconds)"
+					},
+					"invite_member_limit": {
+						"anyOf": [
+							{
+								"type": "integer"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Invite Member Limit",
+						"description": "Override default invite member limit"
+					}
+				},
+				"type": "object",
+				"required": ["chat_id"],
+				"title": "ChannelAddRequest",
+				"description": "Request model to add/register a Telegram channel in the system."
+			},
+			"CreateChannelRequest": {
+				"properties": {
+					"chat_id": {
+						"type": "integer",
+						"title": "Chat Id",
+						"description": "Telegram chat ID"
+					},
+					"name": {
+						"type": "string",
+						"title": "Name",
+						"description": "Channel name"
+					},
+					"description": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Description"
+					},
+					"price_per_month": {
+						"anyOf": [
+							{
+								"type": "integer"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Price Per Month",
+						"description": "Price in cents per month"
+					}
+				},
+				"type": "object",
+				"required": ["chat_id", "name"],
+				"title": "CreateChannelRequest",
+				"description": "Create channel request."
+			},
+			"CreateCheckoutRequest": {
+				"properties": {
+					"price_id": {
+						"type": "string",
+						"title": "Price Id",
+						"description": "Stripe price ID"
+					},
+					"success_url": {
+						"type": "string",
+						"title": "Success Url",
+						"description": "URL to redirect after successful payment"
+					},
+					"cancel_url": {
+						"type": "string",
+						"title": "Cancel Url",
+						"description": "URL to redirect after canceled payment"
+					},
+					"customer_email": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Customer Email",
+						"description": "Customer email"
+					},
+					"metadata": {
+						"anyOf": [
+							{
+								"additionalProperties": {
+									"type": "string"
+								},
+								"type": "object"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Metadata",
+						"description": "Additional metadata"
+					}
+				},
+				"type": "object",
+				"required": ["price_id", "success_url", "cancel_url"],
+				"title": "CreateCheckoutRequest",
+				"description": "Create checkout session request."
+			},
+			"CreatePaymentIntentRequest": {
+				"properties": {
+					"amount": {
+						"type": "integer",
+						"title": "Amount",
+						"description": "Amount in cents"
+					},
+					"currency": {
+						"type": "string",
+						"title": "Currency",
+						"description": "Currency code",
+						"default": "usd"
+					},
+					"customer_email": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Customer Email",
+						"description": "Customer email"
+					},
+					"metadata": {
+						"anyOf": [
+							{
+								"additionalProperties": {
+									"type": "string"
+								},
+								"type": "object"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Metadata",
+						"description": "Additional metadata"
+					}
+				},
+				"type": "object",
+				"required": ["amount"],
+				"title": "CreatePaymentIntentRequest",
+				"description": "Create payment intent request."
+			},
+			"CreateWebhookRequest": {
+				"properties": {
+					"url": {
+						"type": "string",
+						"title": "Url",
+						"description": "Webhook URL"
+					},
+					"events": {
+						"anyOf": [
+							{
+								"items": {
+									"type": "string"
+								},
+								"type": "array"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Events",
+						"description": "Events to subscribe to"
+					}
+				},
+				"type": "object",
+				"required": ["url"],
+				"title": "CreateWebhookRequest",
+				"description": "Create webhook configuration."
+			},
+			"ErrorDetail": {
+				"properties": {
+					"code": {
+						"type": "string",
+						"title": "Code",
+						"description": "Error code"
+					},
+					"description": {
+						"type": "string",
+						"title": "Description",
+						"description": "Error description"
+					}
+				},
+				"type": "object",
+				"required": ["code", "description"],
+				"title": "ErrorDetail",
+				"description": "Error detail model."
+			},
+			"ForceRemoveData": {
+				"properties": {
+					"removed": {
+						"type": "boolean",
+						"title": "Removed",
+						"description": "Whether user was removed from chat"
+					},
+					"expired_membership": {
+						"type": "boolean",
+						"title": "Expired Membership",
+						"description": "Whether membership was expired"
+					},
+					"details": {
+						"additionalProperties": true,
+						"type": "object",
+						"title": "Details",
+						"description": "Additional details"
+					}
+				},
+				"type": "object",
+				"required": ["removed", "expired_membership"],
+				"title": "ForceRemoveData",
+				"description": "Data model for force remove response."
+			},
+			"ForceRemoveRequest": {
+				"properties": {
+					"ext_user_id": {
+						"type": "string",
+						"title": "Ext User Id",
+						"description": "External user ID"
+					},
+					"chat_id": {
+						"type": "integer",
+						"title": "Chat Id",
+						"description": "Telegram chat ID (-100 form for channels)"
+					},
+					"reason": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Reason",
+						"description": "Reason for removal (for audit)"
+					},
+					"dry_run": {
+						"type": "boolean",
+						"title": "Dry Run",
+						"description": "If true, only report what would happen",
+						"default": false
+					}
+				},
+				"type": "object",
+				"required": ["ext_user_id", "chat_id"],
+				"title": "ForceRemoveRequest",
+				"description": "Force remove a user from a Telegram channel and expire membership."
+			},
+			"GrantAccessData": {
+				"properties": {
+					"user_id": {
+						"type": "string",
+						"title": "User Id",
+						"description": "Internal user ID"
+					},
+					"invites": {
+						"additionalProperties": {
+							"type": "string"
+						},
+						"type": "object",
+						"title": "Invites",
+						"description": "Map of chat_id to invite_link or join instruction"
+					},
+					"period_end": {
+						"type": "string",
+						"title": "Period End",
+						"description": "Period end datetime in UTC (ISO format)"
+					},
+					"errors": {
+						"anyOf": [
+							{
+								"additionalProperties": {
+									"type": "string"
+								},
+								"type": "object"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Errors",
+						"description": "Map of chat_id to error description if any failed"
+					}
+				},
+				"type": "object",
+				"required": ["user_id", "invites", "period_end"],
+				"title": "GrantAccessData",
+				"description": "Data model for grant access response."
+			},
+			"GrantAccessRequest": {
+				"properties": {
+					"ext_user_id": {
+						"type": "string",
+						"title": "Ext User Id",
+						"description": "External user ID from payment system"
+					},
+					"chat_ids": {
+						"items": {
+							"type": "integer"
+						},
+						"type": "array",
+						"title": "Chat Ids",
+						"description": "List of chat IDs to grant access to"
+					},
+					"period_days": {
+						"type": "integer",
+						"title": "Period Days",
+						"description": "Number of days of access"
+					},
+					"ref": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Ref",
+						"description": "Payment reference ID"
+					}
+				},
+				"type": "object",
+				"required": ["ext_user_id", "chat_ids", "period_days"],
+				"title": "GrantAccessRequest",
+				"description": "Request model for granting access."
+			},
+			"HTTPValidationError": {
+				"properties": {
+					"detail": {
+						"items": {
+							"$ref": "#/components/schemas/ValidationError"
+						},
+						"type": "array",
+						"title": "Detail"
+					}
+				},
+				"type": "object",
+				"title": "HTTPValidationError"
+			},
+			"LoginRequest": {
+				"properties": {
+					"email": {
+						"type": "string",
+						"format": "email",
+						"title": "Email"
+					},
+					"password": {
+						"type": "string",
+						"title": "Password"
+					}
+				},
+				"type": "object",
+				"required": ["email", "password"],
+				"title": "LoginRequest",
+				"description": "Seller login request."
+			},
+			"RegisterRequest": {
+				"properties": {
+					"email": {
+						"type": "string",
+						"format": "email",
+						"title": "Email"
+					},
+					"password": {
+						"type": "string",
+						"minLength": 8,
+						"title": "Password"
+					},
+					"company_name": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Company Name"
+					}
+				},
+				"type": "object",
+				"required": ["email", "password"],
+				"title": "RegisterRequest",
+				"description": "Seller registration request."
+			},
+			"SellerResponse": {
+				"properties": {
+					"id": {
+						"type": "string",
+						"title": "Id"
+					},
+					"email": {
+						"type": "string",
+						"title": "Email"
+					},
+					"company_name": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Company Name"
+					},
+					"is_active": {
+						"type": "boolean",
+						"title": "Is Active"
+					},
+					"is_verified": {
+						"type": "boolean",
+						"title": "Is Verified"
+					},
+					"subscription_status": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Subscription Status"
+					},
+					"created_at": {
+						"type": "string",
+						"title": "Created At"
+					},
+					"last_login": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Last Login"
+					}
+				},
+				"type": "object",
+				"required": [
+					"id",
+					"email",
+					"company_name",
+					"is_active",
+					"is_verified",
+					"subscription_status",
+					"created_at",
+					"last_login"
+				],
+				"title": "SellerResponse",
+				"description": "Seller information response."
+			},
+			"StandardResponse_GrantAccessData_": {
+				"properties": {
+					"success": {
+						"type": "boolean",
+						"title": "Success",
+						"description": "Whether the request was successful"
+					},
+					"message": {
+						"type": "string",
+						"title": "Message",
+						"description": "Human-readable message"
+					},
+					"data": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/GrantAccessData"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"description": "Response data"
+					},
+					"error": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/ErrorDetail"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"description": "Error details if unsuccessful"
+					}
+				},
+				"type": "object",
+				"required": ["success", "message"],
+				"title": "StandardResponse[GrantAccessData]"
+			},
+			"StandardResponse_SellerResponse_": {
+				"properties": {
+					"success": {
+						"type": "boolean",
+						"title": "Success",
+						"description": "Whether the request was successful"
+					},
+					"message": {
+						"type": "string",
+						"title": "Message",
+						"description": "Human-readable message"
+					},
+					"data": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/SellerResponse"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"description": "Response data"
+					},
+					"error": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/ErrorDetail"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"description": "Error details if unsuccessful"
+					}
+				},
+				"type": "object",
+				"required": ["success", "message"],
+				"title": "StandardResponse[SellerResponse]"
+			},
+			"StandardResponse_Token_": {
+				"properties": {
+					"success": {
+						"type": "boolean",
+						"title": "Success",
+						"description": "Whether the request was successful"
+					},
+					"message": {
+						"type": "string",
+						"title": "Message",
+						"description": "Human-readable message"
+					},
+					"data": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/Token"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"description": "Response data"
+					},
+					"error": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/ErrorDetail"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"description": "Error details if unsuccessful"
+					}
+				},
+				"type": "object",
+				"required": ["success", "message"],
+				"title": "StandardResponse[Token]"
+			},
+			"StandardResponse_dict_str__Any__": {
+				"properties": {
+					"success": {
+						"type": "boolean",
+						"title": "Success",
+						"description": "Whether the request was successful"
+					},
+					"message": {
+						"type": "string",
+						"title": "Message",
+						"description": "Human-readable message"
+					},
+					"data": {
+						"anyOf": [
+							{
+								"additionalProperties": true,
+								"type": "object"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Data",
+						"description": "Response data"
+					},
+					"error": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/ErrorDetail"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"description": "Error details if unsuccessful"
+					}
+				},
+				"type": "object",
+				"required": ["success", "message"],
+				"title": "StandardResponse[dict[str, Any]]"
+			},
+			"StandardResponse_dict_str__str__": {
+				"properties": {
+					"success": {
+						"type": "boolean",
+						"title": "Success",
+						"description": "Whether the request was successful"
+					},
+					"message": {
+						"type": "string",
+						"title": "Message",
+						"description": "Human-readable message"
+					},
+					"data": {
+						"anyOf": [
+							{
+								"additionalProperties": {
+									"type": "string"
+								},
+								"type": "object"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Data",
+						"description": "Response data"
+					},
+					"error": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/ErrorDetail"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"description": "Error details if unsuccessful"
+					}
+				},
+				"type": "object",
+				"required": ["success", "message"],
+				"title": "StandardResponse[dict[str, str]]"
+			},
+			"StandardResponse_get_telegram_router._locals_.ChannelAddData_": {
+				"properties": {
+					"success": {
+						"type": "boolean",
+						"title": "Success",
+						"description": "Whether the request was successful"
+					},
+					"message": {
+						"type": "string",
+						"title": "Message",
+						"description": "Human-readable message"
+					},
+					"data": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/ChannelAddData"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"description": "Response data"
+					},
+					"error": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/ErrorDetail"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"description": "Error details if unsuccessful"
+					}
+				},
+				"type": "object",
+				"required": ["success", "message"],
+				"title": "StandardResponse[get_telegram_router.<locals>.ChannelAddData]"
+			},
+			"StandardResponse_get_telegram_router._locals_.ForceRemoveData_": {
+				"properties": {
+					"success": {
+						"type": "boolean",
+						"title": "Success",
+						"description": "Whether the request was successful"
+					},
+					"message": {
+						"type": "string",
+						"title": "Message",
+						"description": "Human-readable message"
+					},
+					"data": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/ForceRemoveData"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"description": "Response data"
+					},
+					"error": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/ErrorDetail"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"description": "Error details if unsuccessful"
+					}
+				},
+				"type": "object",
+				"required": ["success", "message"],
+				"title": "StandardResponse[get_telegram_router.<locals>.ForceRemoveData]"
+			},
+			"StandardResponse_list_dict_str__Any___": {
+				"properties": {
+					"success": {
+						"type": "boolean",
+						"title": "Success",
+						"description": "Whether the request was successful"
+					},
+					"message": {
+						"type": "string",
+						"title": "Message",
+						"description": "Human-readable message"
+					},
+					"data": {
+						"anyOf": [
+							{
+								"items": {
+									"additionalProperties": true,
+									"type": "object"
+								},
+								"type": "array"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Data",
+						"description": "Response data"
+					},
+					"error": {
+						"anyOf": [
+							{
+								"$ref": "#/components/schemas/ErrorDetail"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"description": "Error details if unsuccessful"
+					}
+				},
+				"type": "object",
+				"required": ["success", "message"],
+				"title": "StandardResponse[list[dict[str, Any]]]"
+			},
+			"Token": {
+				"properties": {
+					"access_token": {
+						"type": "string",
+						"title": "Access Token"
+					},
+					"refresh_token": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "null"
+							}
+						],
+						"title": "Refresh Token"
+					},
+					"token_type": {
+						"type": "string",
+						"title": "Token Type",
+						"default": "bearer"
+					}
+				},
+				"type": "object",
+				"required": ["access_token"],
+				"title": "Token",
+				"description": "JWT token response."
+			},
+			"UpdateStripeKeysRequest": {
+				"properties": {
+					"publishable_key": {
+						"type": "string",
+						"title": "Publishable Key"
+					},
+					"secret_key": {
+						"type": "string",
+						"title": "Secret Key"
+					}
+				},
+				"type": "object",
+				"required": ["publishable_key", "secret_key"],
+				"title": "UpdateStripeKeysRequest",
+				"description": "Update seller's Stripe keys."
+			},
+			"ValidationError": {
+				"properties": {
+					"loc": {
+						"items": {
+							"anyOf": [
+								{
+									"type": "string"
+								},
+								{
+									"type": "integer"
+								}
+							]
+						},
+						"type": "array",
+						"title": "Location"
+					},
+					"msg": {
+						"type": "string",
+						"title": "Message"
+					},
+					"type": {
+						"type": "string",
+						"title": "Error Type"
+					}
+				},
+				"type": "object",
+				"required": ["loc", "msg", "type"],
+				"title": "ValidationError"
+			}
+		}
+	}
 }

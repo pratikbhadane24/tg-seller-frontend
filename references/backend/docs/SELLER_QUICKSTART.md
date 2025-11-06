@@ -5,6 +5,7 @@ Get started with the Telegram Paid Subscriber Service platform as a seller.
 ## Overview
 
 As a **SELLER**, you can:
+
 - Manage your own Telegram channels
 - Accept payments from your customers
 - Use your own Stripe account or the platform's
@@ -16,6 +17,7 @@ As a **SELLER**, you can:
 ### 1. Register Your Account
 
 **Using the API:**
+
 ```bash
 curl -X POST https://api.example.com/api/sellers/register \
   -H "Content-Type: application/json" \
@@ -27,15 +29,16 @@ curl -X POST https://api.example.com/api/sellers/register \
 ```
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "message": "Seller registered successfully",
-  "data": {
-    "seller_id": "507f1f77bcf86cd799439011",
-    "email": "you@example.com",
-    "api_key": "sk_abc123xyz..."
-  }
+	"success": true,
+	"message": "Seller registered successfully",
+	"data": {
+		"seller_id": "507f1f77bcf86cd799439011",
+		"email": "you@example.com",
+		"api_key": "sk_abc123xyz..."
+	}
 }
 ```
 
@@ -53,20 +56,22 @@ curl -X POST https://api.example.com/api/sellers/login \
 ```
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "data": {
-    "access_token": "eyJhbGci...",
-    "refresh_token": "eyJhbGci...",
-    "token_type": "bearer"
-  }
+	"success": true,
+	"data": {
+		"access_token": "eyJhbGci...",
+		"refresh_token": "eyJhbGci...",
+		"token_type": "bearer"
+	}
 }
 ```
 
 ### 3. Register Your Telegram Channel
 
 First, make sure:
+
 - You have a Telegram channel
 - Your bot is added as administrator with required permissions
 - You have the chat ID (use [@getidsbot](https://t.me/getidsbot) to get it)
@@ -84,15 +89,16 @@ curl -X POST https://api.example.com/api/sellers/channels \
 ```
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "message": "Channel created successfully",
-  "data": {
-    "channel_id": "507f1f77bcf86cd799439012",
-    "chat_id": -1001234567890,
-    "name": "Premium Crypto Signals"
-  }
+	"success": true,
+	"message": "Channel created successfully",
+	"data": {
+		"channel_id": "507f1f77bcf86cd799439012",
+		"chat_id": -1001234567890,
+		"name": "Premium Crypto Signals"
+	}
 }
 ```
 
@@ -113,6 +119,7 @@ curl -X POST https://api.example.com/api/sellers/stripe-keys \
 ```
 
 **Benefits:**
+
 - Direct deposits to your Stripe account
 - You control the payment flow
 - Lower platform fees
@@ -122,6 +129,7 @@ curl -X POST https://api.example.com/api/sellers/stripe-keys \
 No setup required - the platform handles everything!
 
 **Benefits:**
+
 - No Stripe account needed
 - Faster setup
 - Platform handles compliance and disputes
@@ -144,13 +152,14 @@ curl -X POST https://api.example.com/api/payments/checkout \
 ```
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "data": {
-    "session_id": "cs_test_...",
-    "url": "https://checkout.stripe.com/c/pay/cs_test_..."
-  }
+	"success": true,
+	"data": {
+		"session_id": "cs_test_...",
+		"url": "https://checkout.stripe.com/c/pay/cs_test_..."
+	}
 }
 ```
 
@@ -173,17 +182,18 @@ curl -X POST https://api.example.com/api/telegram/grant-access \
 ```
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "message": "Access granted until 2024-02-14 23:59:59 UTC",
-  "data": {
-    "user_id": "507f1f77bcf86cd799439011",
-    "invites": {
-      "-1001234567890": "https://t.me/+abc123xyz"
-    },
-    "period_end": "2024-02-14T23:59:59Z"
-  }
+	"success": true,
+	"message": "Access granted until 2024-02-14 23:59:59 UTC",
+	"data": {
+		"user_id": "507f1f77bcf86cd799439011",
+		"invites": {
+			"-1001234567890": "https://t.me/+abc123xyz"
+		},
+		"period_end": "2024-02-14T23:59:59Z"
+	}
 }
 ```
 
@@ -199,16 +209,17 @@ curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
 ```
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "data": {
-    "total_channels": 3,
-    "active_members": 142,
-    "total_members": 150,
-    "total_revenue_cents": 698600,
-    "total_revenue_dollars": 6986.00
-  }
+	"success": true,
+	"data": {
+		"total_channels": 3,
+		"active_members": 142,
+		"total_members": 150,
+		"total_revenue_cents": 698600,
+		"total_revenue_dollars": 6986.0
+	}
 }
 ```
 
@@ -255,15 +266,16 @@ curl -X POST https://api.example.com/api/sellers/webhooks \
 ```
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "data": {
-    "webhook_id": "507f1f77bcf86cd799439014",
-    "url": "https://yoursite.com/webhooks/telegram",
-    "secret": "whsec_abc123...",
-    "events": ["member.joined", "member.left", "payment.succeeded", "subscription.expired"]
-  }
+	"success": true,
+	"data": {
+		"webhook_id": "507f1f77bcf86cd799439014",
+		"url": "https://yoursite.com/webhooks/telegram",
+		"secret": "whsec_abc123...",
+		"events": ["member.joined", "member.left", "payment.succeeded", "subscription.expired"]
+	}
 }
 ```
 
@@ -272,6 +284,7 @@ curl -X POST https://api.example.com/api/sellers/webhooks \
 ### Handle Webhook Events
 
 **Python Example:**
+
 ```python
 from fastapi import FastAPI, Request, HTTPException
 import hmac
@@ -285,27 +298,27 @@ async def handle_webhook(request: Request):
     # Get signature
     signature = request.headers.get("X-Webhook-Signature")
     payload = await request.body()
-    
+
     # Verify signature
     expected = hmac.new(
         WEBHOOK_SECRET.encode(),
         payload,
         hashlib.sha256
     ).hexdigest()
-    
+
     if not hmac.compare_digest(signature, expected):
         raise HTTPException(status_code=401, detail="Invalid signature")
-    
+
     # Process event
     event = await request.json()
-    
+
     if event["event"] == "member.joined":
         # Send welcome email
         await send_welcome_email(event["data"]["ext_user_id"])
     elif event["event"] == "payment.succeeded":
         # Update your records
         await update_payment_records(event["data"])
-    
+
     return {"status": "ok"}
 ```
 
@@ -333,7 +346,7 @@ import httpx
 
 async def grant_access_with_retry(api_key: str, user_id: str, chat_id: int):
     max_retries = 3
-    
+
     for attempt in range(max_retries):
         try:
             async with httpx.AsyncClient() as client:
@@ -384,7 +397,7 @@ class TelegramSubscriptionService:
     def __init__(self, api_key: str, base_url: str):
         self.api_key = api_key
         self.base_url = base_url
-    
+
     async def create_subscription(
         self,
         customer_email: str,
@@ -407,7 +420,7 @@ class TelegramSubscriptionService:
             )
             response.raise_for_status()
             return response.json()
-    
+
     async def grant_access(
         self,
         customer_id: str,
@@ -457,21 +470,25 @@ access = await service.grant_access(
 ### Common Issues
 
 **1. "Channel not found" error**
+
 - Make sure bot is added to the channel as admin
 - Use the correct chat ID format (-100...)
 - Check bot permissions (invite users, manage chat, restrict members)
 
 **2. "Authentication required" error**
+
 - Check if token is expired (get new one with /login)
 - Verify Authorization header format: `Bearer {token}`
 - For API key: use `X-API-Key` header
 
 **3. "Invalid webhook signature"**
+
 - Verify you're using the correct secret from webhook creation
 - Check signature calculation (HMAC-SHA256)
 - Ensure payload is used as raw bytes
 
 **4. Customer can't join channel**
+
 - Check if invite link is expired
 - Verify membership is active
 - Ensure customer is not banned

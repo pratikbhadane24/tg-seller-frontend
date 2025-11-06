@@ -52,6 +52,7 @@ audits                # Audit logs
 ### Data Isolation
 
 All seller data is isolated using `seller_id` field:
+
 - Sellers can only access their own channels
 - Sellers can only see their own customers/members
 - Payment records are tracked per seller
@@ -67,6 +68,7 @@ The platform supports two authentication methods:
 Used for web applications and interactive sessions.
 
 **Login Flow:**
+
 ```bash
 POST /api/sellers/login
 {
@@ -86,6 +88,7 @@ Response:
 ```
 
 **Using the token:**
+
 ```bash
 curl -H "Authorization: Bearer eyJ..." https://api.example.com/api/sellers/me
 ```
@@ -98,6 +101,7 @@ Used for server-to-server integration and automation.
 API key is provided during registration or available in seller dashboard.
 
 **Using the API key:**
+
 ```bash
 curl -H "X-API-Key: sk_..." https://api.example.com/api/sellers/stats
 ```
@@ -119,24 +123,26 @@ Register a new seller account.
 **Endpoint:** `POST /api/sellers/register`
 
 **Request:**
+
 ```json
 {
-  "email": "seller@example.com",
-  "password": "SecurePassword123!",
-  "company_name": "My Awesome Company"
+	"email": "seller@example.com",
+	"password": "SecurePassword123!",
+	"company_name": "My Awesome Company"
 }
 ```
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "message": "Seller registered successfully",
-  "data": {
-    "seller_id": "507f1f77bcf86cd799439011",
-    "email": "seller@example.com",
-    "api_key": "sk_abc123xyz..."
-  }
+	"success": true,
+	"message": "Seller registered successfully",
+	"data": {
+		"seller_id": "507f1f77bcf86cd799439011",
+		"email": "seller@example.com",
+		"api_key": "sk_abc123xyz..."
+	}
 }
 ```
 
@@ -147,22 +153,24 @@ Authenticate and get access tokens.
 **Endpoint:** `POST /api/sellers/login`
 
 **Request:**
+
 ```json
 {
-  "email": "seller@example.com",
-  "password": "SecurePassword123!"
+	"email": "seller@example.com",
+	"password": "SecurePassword123!"
 }
 ```
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "data": {
-    "access_token": "eyJhbGci...",
-    "refresh_token": "eyJhbGci...",
-    "token_type": "bearer"
-  }
+	"success": true,
+	"data": {
+		"access_token": "eyJhbGci...",
+		"refresh_token": "eyJhbGci...",
+		"token_type": "bearer"
+	}
 }
 ```
 
@@ -175,19 +183,20 @@ Get current seller information.
 **Headers:** `Authorization: Bearer {token}` or `X-API-Key: {api_key}`
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "data": {
-    "id": "507f1f77bcf86cd799439011",
-    "email": "seller@example.com",
-    "company_name": "My Awesome Company",
-    "is_active": true,
-    "is_verified": true,
-    "subscription_status": "active",
-    "created_at": "2024-01-01T00:00:00Z",
-    "last_login": "2024-01-15T10:30:00Z"
-  }
+	"success": true,
+	"data": {
+		"id": "507f1f77bcf86cd799439011",
+		"email": "seller@example.com",
+		"company_name": "My Awesome Company",
+		"is_active": true,
+		"is_verified": true,
+		"subscription_status": "active",
+		"created_at": "2024-01-01T00:00:00Z",
+		"last_login": "2024-01-15T10:30:00Z"
+	}
 }
 ```
 
@@ -200,21 +209,23 @@ Configure seller's own Stripe account for payments.
 **Headers:** `Authorization: Bearer {token}`
 
 **Request:**
+
 ```json
 {
-  "publishable_key": "pk_live_...",
-  "secret_key": "sk_live_..."
+	"publishable_key": "pk_live_...",
+	"secret_key": "sk_live_..."
 }
 ```
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "message": "Stripe keys updated successfully",
-  "data": {
-    "status": "updated"
-  }
+	"success": true,
+	"message": "Stripe keys updated successfully",
+	"data": {
+		"status": "updated"
+	}
 }
 ```
 
@@ -227,25 +238,27 @@ Register a new Telegram channel.
 **Headers:** `Authorization: Bearer {token}`
 
 **Request:**
+
 ```json
 {
-  "chat_id": -1001234567890,
-  "name": "Premium Crypto Signals",
-  "description": "Daily crypto trading signals",
-  "price_per_month": 4900
+	"chat_id": -1001234567890,
+	"name": "Premium Crypto Signals",
+	"description": "Daily crypto trading signals",
+	"price_per_month": 4900
 }
 ```
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "message": "Channel created successfully",
-  "data": {
-    "channel_id": "507f1f77bcf86cd799439012",
-    "chat_id": -1001234567890,
-    "name": "Premium Crypto Signals"
-  }
+	"success": true,
+	"message": "Channel created successfully",
+	"data": {
+		"channel_id": "507f1f77bcf86cd799439012",
+		"chat_id": -1001234567890,
+		"name": "Premium Crypto Signals"
+	}
 }
 ```
 
@@ -258,22 +271,23 @@ Get all channels for the seller.
 **Headers:** `Authorization: Bearer {token}`
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "message": "Found 3 channel(s)",
-  "data": [
-    {
-      "id": "507f1f77bcf86cd799439012",
-      "chat_id": -1001234567890,
-      "name": "Premium Crypto Signals",
-      "description": "Daily crypto trading signals",
-      "price_per_month": 4900,
-      "total_members": 150,
-      "active_members": 142,
-      "is_active": true
-    }
-  ]
+	"success": true,
+	"message": "Found 3 channel(s)",
+	"data": [
+		{
+			"id": "507f1f77bcf86cd799439012",
+			"chat_id": -1001234567890,
+			"name": "Premium Crypto Signals",
+			"description": "Daily crypto trading signals",
+			"price_per_month": 4900,
+			"total_members": 150,
+			"active_members": 142,
+			"is_active": true
+		}
+	]
 }
 ```
 
@@ -286,31 +300,33 @@ Get members across seller's channels.
 **Headers:** `Authorization: Bearer {token}`
 
 **Query Parameters:**
+
 - `chat_id` (optional): Filter by specific channel
 - `status` (optional): Filter by status (active, cancelled, expired)
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "message": "Found 142 member(s)",
-  "data": [
-    {
-      "membership": {
-        "_id": "507f1f77bcf86cd799439013",
-        "user_id": "507f1f77bcf86cd799439011",
-        "chat_id": -1001234567890,
-        "status": "active",
-        "current_period_end": "2024-02-01T00:00:00Z"
-      },
-      "user": {
-        "_id": "507f1f77bcf86cd799439011",
-        "ext_user_id": "user123",
-        "telegram_user_id": 123456789,
-        "telegram_username": "johndoe"
-      }
-    }
-  ]
+	"success": true,
+	"message": "Found 142 member(s)",
+	"data": [
+		{
+			"membership": {
+				"_id": "507f1f77bcf86cd799439013",
+				"user_id": "507f1f77bcf86cd799439011",
+				"chat_id": -1001234567890,
+				"status": "active",
+				"current_period_end": "2024-02-01T00:00:00Z"
+			},
+			"user": {
+				"_id": "507f1f77bcf86cd799439011",
+				"ext_user_id": "user123",
+				"telegram_user_id": 123456789,
+				"telegram_username": "johndoe"
+			}
+		}
+	]
 }
 ```
 
@@ -323,16 +339,17 @@ Get dashboard statistics.
 **Headers:** `Authorization: Bearer {token}`
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "data": {
-    "total_channels": 3,
-    "active_members": 142,
-    "total_members": 150,
-    "total_revenue_cents": 698600,
-    "total_revenue_dollars": 6986.00
-  }
+	"success": true,
+	"data": {
+		"total_channels": 3,
+		"active_members": 142,
+		"total_members": 150,
+		"total_revenue_cents": 698600,
+		"total_revenue_dollars": 6986.0
+	}
 }
 ```
 
@@ -345,29 +362,26 @@ Register a webhook to receive events.
 **Headers:** `Authorization: Bearer {token}`
 
 **Request:**
+
 ```json
 {
-  "url": "https://myapp.com/webhooks/telegram",
-  "events": [
-    "member.joined",
-    "member.left",
-    "payment.succeeded",
-    "subscription.expired"
-  ]
+	"url": "https://myapp.com/webhooks/telegram",
+	"events": ["member.joined", "member.left", "payment.succeeded", "subscription.expired"]
 }
 ```
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "message": "Webhook created successfully",
-  "data": {
-    "webhook_id": "507f1f77bcf86cd799439014",
-    "url": "https://myapp.com/webhooks/telegram",
-    "secret": "whsec_abc123...",
-    "events": ["member.joined", "member.left", "payment.succeeded", "subscription.expired"]
-  }
+	"success": true,
+	"message": "Webhook created successfully",
+	"data": {
+		"webhook_id": "507f1f77bcf86cd799439014",
+		"url": "https://myapp.com/webhooks/telegram",
+		"secret": "whsec_abc123...",
+		"events": ["member.joined", "member.left", "payment.succeeded", "subscription.expired"]
+	}
 }
 ```
 
@@ -380,19 +394,20 @@ Get all webhook configurations.
 **Headers:** `Authorization: Bearer {token}`
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "message": "Found 1 webhook(s)",
-  "data": [
-    {
-      "id": "507f1f77bcf86cd799439014",
-      "url": "https://myapp.com/webhooks/telegram",
-      "events": ["member.joined", "member.left"],
-      "is_active": true,
-      "last_triggered": "2024-01-15T10:30:00Z"
-    }
-  ]
+	"success": true,
+	"message": "Found 1 webhook(s)",
+	"data": [
+		{
+			"id": "507f1f77bcf86cd799439014",
+			"url": "https://myapp.com/webhooks/telegram",
+			"events": ["member.joined", "member.left"],
+			"is_active": true,
+			"last_triggered": "2024-01-15T10:30:00Z"
+		}
+	]
 }
 ```
 
@@ -407,28 +422,30 @@ Create a Stripe checkout session for subscriptions.
 **Headers:** `Authorization: Bearer {token}`
 
 **Request:**
+
 ```json
 {
-  "price_id": "price_1234567890",
-  "success_url": "https://myapp.com/success",
-  "cancel_url": "https://myapp.com/cancel",
-  "customer_email": "customer@example.com",
-  "metadata": {
-    "channel_id": "507f1f77bcf86cd799439012",
-    "plan": "monthly"
-  }
+	"price_id": "price_1234567890",
+	"success_url": "https://myapp.com/success",
+	"cancel_url": "https://myapp.com/cancel",
+	"customer_email": "customer@example.com",
+	"metadata": {
+		"channel_id": "507f1f77bcf86cd799439012",
+		"plan": "monthly"
+	}
 }
 ```
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "message": "Checkout session created",
-  "data": {
-    "session_id": "cs_test_...",
-    "url": "https://checkout.stripe.com/c/pay/cs_test_..."
-  }
+	"success": true,
+	"message": "Checkout session created",
+	"data": {
+		"session_id": "cs_test_...",
+		"url": "https://checkout.stripe.com/c/pay/cs_test_..."
+	}
 }
 ```
 
@@ -441,26 +458,28 @@ Create a payment intent for custom payment flows.
 **Headers:** `Authorization: Bearer {token}`
 
 **Request:**
+
 ```json
 {
-  "amount": 4900,
-  "currency": "usd",
-  "customer_email": "customer@example.com",
-  "metadata": {
-    "channel_id": "507f1f77bcf86cd799439012"
-  }
+	"amount": 4900,
+	"currency": "usd",
+	"customer_email": "customer@example.com",
+	"metadata": {
+		"channel_id": "507f1f77bcf86cd799439012"
+	}
 }
 ```
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "message": "Payment intent created",
-  "data": {
-    "client_secret": "pi_..._secret_...",
-    "payment_intent_id": "pi_..."
-  }
+	"success": true,
+	"message": "Payment intent created",
+	"data": {
+		"client_secret": "pi_..._secret_...",
+		"payment_intent_id": "pi_..."
+	}
 }
 ```
 
@@ -473,16 +492,17 @@ Get subscription details.
 **Headers:** `Authorization: Bearer {token}`
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "data": {
-    "id": "sub_...",
-    "status": "active",
-    "current_period_start": 1704067200,
-    "current_period_end": 1706745600,
-    "cancel_at_period_end": false
-  }
+	"success": true,
+	"data": {
+		"id": "sub_...",
+		"status": "active",
+		"current_period_start": 1704067200,
+		"current_period_end": 1706745600,
+		"cancel_at_period_end": false
+	}
 }
 ```
 
@@ -495,21 +515,22 @@ Get payment history.
 **Headers:** `Authorization: Bearer {token}`
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "message": "Found 15 payment(s)",
-  "data": [
-    {
-      "id": "507f1f77bcf86cd799439015",
-      "amount": 4900,
-      "currency": "usd",
-      "status": "succeeded",
-      "stripe_payment_intent_id": "pi_...",
-      "used_seller_stripe": true,
-      "created_at": "2024-01-15T10:30:00Z"
-    }
-  ]
+	"success": true,
+	"message": "Found 15 payment(s)",
+	"data": [
+		{
+			"id": "507f1f77bcf86cd799439015",
+			"amount": 4900,
+			"currency": "usd",
+			"status": "succeeded",
+			"stripe_payment_intent_id": "pi_...",
+			"used_seller_stripe": true,
+			"created_at": "2024-01-15T10:30:00Z"
+		}
+	]
 }
 ```
 
@@ -524,27 +545,29 @@ Grant a customer access to channels after payment.
 **Headers:** `Authorization: Bearer {token}` or `X-API-Key: {api_key}`
 
 **Request:**
+
 ```json
 {
-  "ext_user_id": "customer_12345",
-  "chat_ids": [-1001234567890],
-  "period_days": 30,
-  "ref": "payment_abc123"
+	"ext_user_id": "customer_12345",
+	"chat_ids": [-1001234567890],
+	"period_days": 30,
+	"ref": "payment_abc123"
 }
 ```
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "message": "Access granted until 2024-02-14 23:59:59 UTC",
-  "data": {
-    "user_id": "507f1f77bcf86cd799439011",
-    "invites": {
-      "-1001234567890": "https://t.me/+abc123xyz"
-    },
-    "period_end": "2024-02-14T23:59:59Z"
-  }
+	"success": true,
+	"message": "Access granted until 2024-02-14 23:59:59 UTC",
+	"data": {
+		"user_id": "507f1f77bcf86cd799439011",
+		"invites": {
+			"-1001234567890": "https://t.me/+abc123xyz"
+		},
+		"period_end": "2024-02-14T23:59:59Z"
+	}
 }
 ```
 
@@ -557,28 +580,30 @@ Forcefully remove a member from a channel.
 **Headers:** `Authorization: Bearer {token}`
 
 **Request:**
+
 ```json
 {
-  "ext_user_id": "customer_12345",
-  "chat_id": -1001234567890,
-  "reason": "Policy violation",
-  "dry_run": false
+	"ext_user_id": "customer_12345",
+	"chat_id": -1001234567890,
+	"reason": "Policy violation",
+	"dry_run": false
 }
 ```
 
 **Response:**
+
 ```json
 {
-  "success": true,
-  "message": "User removed from chat. Membership expired: true",
-  "data": {
-    "removed": true,
-    "expired_membership": true,
-    "details": {
-      "telegram_user_id": 123456789,
-      "membership_found": true
-    }
-  }
+	"success": true,
+	"message": "User removed from chat. Membership expired: true",
+	"data": {
+		"removed": true,
+		"expired_membership": true,
+		"details": {
+			"telegram_user_id": 123456789,
+			"membership_found": true
+		}
+	}
 }
 ```
 
@@ -589,69 +614,73 @@ Forcefully remove a member from a channel.
 The platform sends webhooks to sellers for the following events:
 
 #### member.joined
+
 Sent when a user joins a channel.
 
 ```json
 {
-  "event": "member.joined",
-  "timestamp": "2024-01-15T10:30:00Z",
-  "data": {
-    "chat_id": -1001234567890,
-    "user_id": "507f1f77bcf86cd799439011",
-    "ext_user_id": "customer_12345",
-    "telegram_user_id": 123456789,
-    "telegram_username": "johndoe"
-  }
+	"event": "member.joined",
+	"timestamp": "2024-01-15T10:30:00Z",
+	"data": {
+		"chat_id": -1001234567890,
+		"user_id": "507f1f77bcf86cd799439011",
+		"ext_user_id": "customer_12345",
+		"telegram_user_id": 123456789,
+		"telegram_username": "johndoe"
+	}
 }
 ```
 
 #### member.left
+
 Sent when a user leaves or is removed from a channel.
 
 ```json
 {
-  "event": "member.left",
-  "timestamp": "2024-01-15T10:30:00Z",
-  "data": {
-    "chat_id": -1001234567890,
-    "user_id": "507f1f77bcf86cd799439011",
-    "telegram_user_id": 123456789,
-    "reason": "left|kicked|expired"
-  }
+	"event": "member.left",
+	"timestamp": "2024-01-15T10:30:00Z",
+	"data": {
+		"chat_id": -1001234567890,
+		"user_id": "507f1f77bcf86cd799439011",
+		"telegram_user_id": 123456789,
+		"reason": "left|kicked|expired"
+	}
 }
 ```
 
 #### payment.succeeded
+
 Sent when a payment is successful.
 
 ```json
 {
-  "event": "payment.succeeded",
-  "timestamp": "2024-01-15T10:30:00Z",
-  "data": {
-    "payment_id": "507f1f77bcf86cd799439015",
-    "amount": 4900,
-    "currency": "usd",
-    "customer_id": "507f1f77bcf86cd799439011",
-    "ext_user_id": "customer_12345",
-    "stripe_payment_intent_id": "pi_..."
-  }
+	"event": "payment.succeeded",
+	"timestamp": "2024-01-15T10:30:00Z",
+	"data": {
+		"payment_id": "507f1f77bcf86cd799439015",
+		"amount": 4900,
+		"currency": "usd",
+		"customer_id": "507f1f77bcf86cd799439011",
+		"ext_user_id": "customer_12345",
+		"stripe_payment_intent_id": "pi_..."
+	}
 }
 ```
 
 #### subscription.expired
+
 Sent when a subscription expires.
 
 ```json
 {
-  "event": "subscription.expired",
-  "timestamp": "2024-01-15T10:30:00Z",
-  "data": {
-    "membership_id": "507f1f77bcf86cd799439013",
-    "user_id": "507f1f77bcf86cd799439011",
-    "ext_user_id": "customer_12345",
-    "chat_id": -1001234567890
-  }
+	"event": "subscription.expired",
+	"timestamp": "2024-01-15T10:30:00Z",
+	"data": {
+		"membership_id": "507f1f77bcf86cd799439013",
+		"user_id": "507f1f77bcf86cd799439011",
+		"ext_user_id": "customer_12345",
+		"chat_id": -1001234567890
+	}
 }
 ```
 
@@ -660,6 +689,7 @@ Sent when a subscription expires.
 All webhooks are signed with HMAC-SHA256. Verify signatures to ensure authenticity.
 
 **Python Example:**
+
 ```python
 import hmac
 import hashlib
@@ -678,10 +708,10 @@ async def handle_webhook(request: Request):
     payload = await request.body()
     signature = request.headers.get("X-Webhook-Signature")
     secret = "whsec_abc123..."  # From webhook creation
-    
+
     if not verify_webhook_signature(payload, signature, secret):
         raise HTTPException(status_code=401, detail="Invalid signature")
-    
+
     # Process webhook...
 ```
 
@@ -802,26 +832,26 @@ async def handle_telegram_webhook(request: Request):
     # Verify signature
     payload = await request.body()
     signature = request.headers.get("X-Webhook-Signature")
-    
+
     expected = hmac.new(
         WEBHOOK_SECRET.encode(),
         payload,
         hashlib.sha256
     ).hexdigest()
-    
+
     if not hmac.compare_digest(signature, expected):
         raise HTTPException(status_code=401, detail="Invalid signature")
-    
+
     # Process event
     event = await request.json()
-    
+
     if event["event"] == "member.joined":
         # Handle new member
         await handle_member_joined(event["data"])
     elif event["event"] == "payment.succeeded":
         # Handle successful payment
         await handle_payment_succeeded(event["data"])
-    
+
     return {"status": "ok"}
 ```
 
