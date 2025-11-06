@@ -51,12 +51,6 @@
 				return 'badge-info';
 		}
 	}
-
-	$effect(() => {
-		const totalRevenue = payments.reduce((sum, p) => sum + p.amount, 0);
-		const succeeded = payments.filter((p) => p.status === 'succeeded').length;
-		return { totalRevenue, succeeded };
-	});
 </script>
 
 <svelte:head>

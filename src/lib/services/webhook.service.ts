@@ -11,6 +11,6 @@ export const webhookService = {
 	},
 
 	async delete(webhookId: string) {
-		return api.delete(`/api/sellers/webhooks/${webhookId}`);
+		return api.delete<{ success: boolean }>(`/api/sellers/webhooks/${webhookId}`);
 	}
 };

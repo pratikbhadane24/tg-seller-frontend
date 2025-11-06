@@ -1,4 +1,5 @@
 import type { StandardResponse } from '$lib/types/api';
+import { goto } from '$lib/utils/navigation';
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001';
 
@@ -56,7 +57,7 @@ export class ApiClient {
 				// Handle 401 Unauthorized
 				if (response.status === 401 && typeof window !== 'undefined') {
 					localStorage.clear();
-					window.location.href = '/login';
+					goto('/login');
 				}
 
 				throw new ApiError(

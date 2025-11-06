@@ -311,7 +311,7 @@
 
 					{#if webhooks.length === 0}
 						<div class="py-12 text-center">
-							<div class="mb-4 text-6xl">🔔</div>
+							<div aria-hidden="true" class="mb-4 text-6xl">🔔</div>
 							<h3 class="mb-2 text-xl font-semibold">No Webhooks Configured</h3>
 							<p class="mb-6 text-gray-400">
 								Add a webhook to receive real-time event notifications
@@ -359,6 +359,7 @@
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="webhook-modal-title"
+		tabindex="-1"
 		onclick={() => (showWebhookModal = false)}
 		onkeydown={(e) => e.key === 'Escape' && (showWebhookModal = false)}
 	>

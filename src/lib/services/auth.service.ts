@@ -9,6 +9,8 @@ import type {
 	StripeKeysRequest
 } from '$lib/types/api';
 
+import { goto } from '$lib/utils/navigation';
+
 export const authService = {
 	async register(data: RegisterRequest) {
 		const response = await api.post<RegistrationData>('/api/sellers/register', data);
@@ -30,7 +32,7 @@ export const authService = {
 
 	logout() {
 		localStorage.clear();
-		window.location.href = '/login';
+		goto('/login');
 	},
 
 	isAuthenticated(): boolean {
