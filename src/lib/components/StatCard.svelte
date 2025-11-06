@@ -20,8 +20,8 @@
 <div class="cyber-card {colorClasses[color]} relative overflow-hidden">
 	<div class="flex items-center justify-between">
 		<div>
-			<p class="text-sm text-gray-400 uppercase tracking-wider">{title}</p>
-			<p class="text-3xl font-bold mt-2 cyber-text-glow">{value}</p>
+			<p class="text-sm tracking-wider text-gray-400 uppercase">{title}</p>
+			<p class="cyber-text-glow mt-2 text-3xl font-bold">{value}</p>
 		</div>
 		<div class="text-4xl opacity-50">{icon}</div>
 	</div>

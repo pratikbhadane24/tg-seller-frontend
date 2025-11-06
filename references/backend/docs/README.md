@@ -13,6 +13,7 @@ Complete documentation for the Telegram Paid Subscriber Service.
 ### For New Users
 
 Start here:
+
 1. [Setup Guide](setup.md) - Get the service running
 2. [User Guide](user-guide.md#granting-access) - Learn how to grant access
 
@@ -95,6 +96,7 @@ HTTP Request → Router → Service → Bot API → Telegram
 **Scenario**: Grant users access to premium Telegram channels after payment.
 
 **Implementation**:
+
 1. User completes payment in your system
 2. Your payment webhook calls `POST /api/telegram/grant-access`
 3. Service creates invite link and membership
@@ -109,6 +111,7 @@ HTTP Request → Router → Service → Bot API → Telegram
 **Scenario**: Manage recurring subscriptions with automatic renewal.
 
 **Implementation**:
+
 1. User subscribes (monthly/yearly)
 2. On each billing cycle, call grant-access with period_days
 3. Service extends membership automatically
@@ -122,6 +125,7 @@ HTTP Request → Router → Service → Bot API → Telegram
 **Scenario**: Different subscription tiers with different channel access.
 
 **Implementation**:
+
 1. Define tier → channel mapping in your application
 2. On subscription, grant access to tier-specific channels
 3. Use different period_days for different tiers
@@ -129,6 +133,7 @@ HTTP Request → Router → Service → Bot API → Telegram
 5. Downgrade: let old memberships expire naturally
 
 **Code Example**:
+
 ```python
 tier_channels = {
     'basic': [-1001234567890],
@@ -138,7 +143,7 @@ tier_channels = {
 
 async def grant_tier_access(user_id: str, tier: str, days: int):
     chat_ids = tier_channels.get(tier, [])
-    
+
     async with httpx.AsyncClient() as client:
         response = await client.post(
             f"{TELEGRAM_SERVICE_URL}/api/telegram/grant-access",
@@ -149,7 +154,7 @@ async def grant_tier_access(user_id: str, tier: str, days: int):
                 "ref": f"subscription_{tier}_{user_id}"
             }
         )
-    
+
     return response.json()
 ```
 
@@ -167,7 +172,7 @@ async def handle_payment_success(payment):
         chat_ids=get_channels_for_plan(payment.plan),
         period_days=payment.period
     )
-    
+
     # Send invite links to user
     await send_email_with_invites(payment.user_id, result['invites'])
 ```
@@ -202,7 +207,7 @@ async def telegram_webhook(event: TelegramEvent):
     if event.type == "membership.expired":
         # Update user in your database
         await update_user_access(event.user_id, expired=True)
-    
+
     return {"ok": True}
 ```
 

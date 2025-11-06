@@ -11,18 +11,18 @@
 	--cyber-purple: #b429f9;
 	--cyber-red: #ff003c;
 	--cyber-green: #05ffa1;
-	
+
 	/* Dark Background Variations */
 	--bg-primary: #0a0e27;
 	--bg-secondary: #131833;
 	--bg-tertiary: #1a1f3a;
 	--bg-card: #161b33;
-	
+
 	/* Text Colors */
 	--text-primary: #e6e6e6;
 	--text-secondary: #b3b3b3;
 	--text-dim: #808080;
-	
+
 	/* Border & Effects */
 	--border-color: #2a2f4a;
 	--glow-color: var(--cyber-blue);
@@ -37,23 +37,32 @@
 body {
 	background: var(--bg-primary);
 	color: var(--text-primary);
-	font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	font-family:
+		'Inter',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		sans-serif;
 	line-height: 1.6;
 }
 
 /* Cyberpunk Glow Effect */
 .cyber-glow {
-	box-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color);
+	box-shadow:
+		0 0 10px var(--glow-color),
+		0 0 20px var(--glow-color);
 }
 
 .cyber-text-glow {
-	text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+	text-shadow:
+		0 0 10px currentColor,
+		0 0 20px currentColor;
 }
 
 /* Neon Border Effect */
 .neon-border {
 	border: 2px solid var(--cyber-blue);
-	box-shadow: 
+	box-shadow:
 		inset 0 0 10px rgba(0, 240, 255, 0.3),
 		0 0 10px rgba(0, 240, 255, 0.5);
 }
@@ -86,7 +95,8 @@ body {
 
 /* Pulse Animation */
 @keyframes pulse {
-	0%, 100% {
+	0%,
+	100% {
 		opacity: 1;
 	}
 	50% {
@@ -115,11 +125,7 @@ body {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background: linear-gradient(
-		to bottom,
-		transparent 50%,
-		rgba(0, 240, 255, 0.05) 50%
-	);
+	background: linear-gradient(to bottom, transparent 50%, rgba(0, 240, 255, 0.05) 50%);
 	background-size: 100% 4px;
 	pointer-events: none;
 	animation: scan 8s linear infinite;

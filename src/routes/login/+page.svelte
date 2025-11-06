@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
+	import { goto } from '$lib/utils/navigation';
+	import { resolve } from '$app/paths';
 	import Button from '$lib/components/Button.svelte';
 	import Input from '$lib/components/Input.svelte';
 	import { authService } from '$lib/services/auth.service';
@@ -18,7 +19,7 @@
 
 	async function handleLogin(e: Event) {
 		e.preventDefault();
-		
+
 		if (!email || !password) {
 			error = 'Please fill in all fields';
 			return;
@@ -32,8 +33,8 @@
 			if (response.success) {
 				goto('/dashboard');
 			}
-		} catch (err: any) {
-			error = err.message || 'Login failed. Please check your credentials.';
+		} catch (err: unknown) {
+			error = (err as Error).message || 'Login failed. Please check your credentials.';
 		} finally {
 			loading = false;
 		}
@@ -44,21 +45,21 @@
 	<title>Login - TG Seller Platform</title>
 </svelte:head>
 
-<div class="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+<div class="relative flex min-h-screen items-center justify-center overflow-hidden p-4">
 	<!-- Background Effects -->
-	<div class="absolute inset-0 scan-lines opacity-30"></div>
+	<div class="scan-lines absolute inset-0 opacity-30"></div>
 	<div
-		class="absolute top-0 left-0 w-96 h-96 bg-[var(--cyber-blue)] rounded-full filter blur-[150px] opacity-20 animate-pulse"
+		class="absolute top-0 left-0 h-96 w-96 animate-pulse rounded-full bg-[var(--cyber-blue)] opacity-20 blur-[150px] filter"
 	></div>
 	<div
-		class="absolute bottom-0 right-0 w-96 h-96 bg-[var(--cyber-purple)] rounded-full filter blur-[150px] opacity-20 animate-pulse"
+		class="absolute right-0 bottom-0 h-96 w-96 animate-pulse rounded-full bg-[var(--cyber-purple)] opacity-20 blur-[150px] filter"
 		style="animation-delay: 1s;"
 	></div>
 
 	<!-- Login Card -->
-	<div class="cyber-card max-w-md w-full relative z-10 neon-border">
-		<div class="text-center mb-8">
-			<h1 class="text-4xl font-bold mb-2 cyber-text-glow" style="color: var(--cyber-blue)">
+	<div class="cyber-card neon-border relative z-10 w-full max-w-md">
+		<div class="mb-8 text-center">
+			<h1 class="cyber-text-glow mb-2 text-4xl font-bold" style="color: var(--cyber-blue)">
 				SELLER LOGIN
 			</h1>
 			<p class="text-gray-400">Access your Telegram Seller Dashboard</p>
@@ -85,7 +86,7 @@
 
 			{#if error}
 				<div
-					class="mb-4 p-3 bg-[var(--cyber-red)] bg-opacity-20 border border-[var(--cyber-red)] rounded text-sm"
+					class="bg-opacity-20 mb-4 rounded border border-[var(--cyber-red)] bg-[var(--cyber-red)] p-3 text-sm"
 				>
 					{error}
 				</div>
@@ -103,7 +104,10 @@
 		<div class="mt-6 text-center">
 			<p class="text-gray-400">
 				Don't have an account?
-				<a href="/register" class="text-[var(--cyber-blue)] hover:underline font-semibold">
+				<a
+					href={resolve('/register')}
+					class="font-semibold text-[var(--cyber-blue)] hover:underline"
+				>
 					Register
 				</a>
 			</p>

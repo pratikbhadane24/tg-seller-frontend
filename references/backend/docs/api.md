@@ -52,12 +52,13 @@ Check if the service is running and healthy.
 
 ```json
 {
-  "status": "UP",
-  "service": "telegram"
+	"status": "UP",
+	"service": "telegram"
 }
 ```
 
 **Status Codes:**
+
 - `200 OK`: Service is healthy
 
 **Example:**
@@ -78,45 +79,46 @@ Grant a user access to one or more Telegram channels for a specified period.
 
 ```json
 {
-  "ext_user_id": "user123",
-  "chat_ids": [-1001234567890, -1009876543210],
-  "period_days": 30,
-  "ref": "payment_abc123"
+	"ext_user_id": "user123",
+	"chat_ids": [-1001234567890, -1009876543210],
+	"period_days": 30,
+	"ref": "payment_abc123"
 }
 ```
 
 **Parameters:**
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `ext_user_id` | string | Yes | External user ID from your system |
-| `chat_ids` | array[int] | Yes | List of Telegram chat IDs (negative for channels) |
-| `period_days` | int | Yes | Number of days to grant access |
-| `ref` | string | No | Reference ID (e.g., payment ID) for tracking |
+| Field         | Type       | Required | Description                                       |
+| ------------- | ---------- | -------- | ------------------------------------------------- |
+| `ext_user_id` | string     | Yes      | External user ID from your system                 |
+| `chat_ids`    | array[int] | Yes      | List of Telegram chat IDs (negative for channels) |
+| `period_days` | int        | Yes      | Number of days to grant access                    |
+| `ref`         | string     | No       | Reference ID (e.g., payment ID) for tracking      |
 
 **Response:**
 
 ```json
 {
-  "success": true,
-  "invites": [
-    {
-      "chat_id": -1001234567890,
-      "invite_link": "https://t.me/+abc123xyz",
-      "expire_at": "2024-01-15T10:30:00Z"
-    }
-  ],
-  "memberships": [
-    {
-      "chat_id": -1001234567890,
-      "status": "active",
-      "current_period_end": "2024-02-14T10:30:00Z"
-    }
-  ]
+	"success": true,
+	"invites": [
+		{
+			"chat_id": -1001234567890,
+			"invite_link": "https://t.me/+abc123xyz",
+			"expire_at": "2024-01-15T10:30:00Z"
+		}
+	],
+	"memberships": [
+		{
+			"chat_id": -1001234567890,
+			"status": "active",
+			"current_period_end": "2024-02-14T10:30:00Z"
+		}
+	]
 }
 ```
 
 **Status Codes:**
+
 - `200 OK`: Access granted successfully
 - `400 Bad Request`: Invalid request parameters
 - `422 Unprocessable Entity`: Validation error
@@ -170,9 +172,9 @@ Receive updates from Telegram Bot API. This endpoint is automatically configured
 
 **Parameters:**
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `secret_path` | string | Yes | Secret path configured in `TELEGRAM_WEBHOOK_SECRET_PATH` |
+| Field         | Type   | Required | Description                                              |
+| ------------- | ------ | -------- | -------------------------------------------------------- |
+| `secret_path` | string | Yes      | Secret path configured in `TELEGRAM_WEBHOOK_SECRET_PATH` |
 
 **Request Body:**
 
@@ -182,11 +184,12 @@ Telegram sends update objects as defined in the [Telegram Bot API](https://core.
 
 ```json
 {
-  "ok": true
+	"ok": true
 }
 ```
 
 **Status Codes:**
+
 - `200 OK`: Update processed successfully
 - `404 Not Found`: Invalid secret path
 
@@ -200,12 +203,12 @@ Represents a user in the system.
 
 ```json
 {
-  "_id": "507f1f77bcf86cd799439011",
-  "ext_user_id": "user123",
-  "telegram_user_id": 123456789,
-  "telegram_username": "testuser",
-  "created_at": "2024-01-01T00:00:00Z",
-  "updated_at": "2024-01-01T00:00:00Z"
+	"_id": "507f1f77bcf86cd799439011",
+	"ext_user_id": "user123",
+	"telegram_user_id": 123456789,
+	"telegram_username": "testuser",
+	"created_at": "2024-01-01T00:00:00Z",
+	"updated_at": "2024-01-01T00:00:00Z"
 }
 ```
 
@@ -215,12 +218,12 @@ Represents a Telegram channel configuration.
 
 ```json
 {
-  "_id": "507f1f77bcf86cd799439012",
-  "chat_id": -1001234567890,
-  "name": "Premium Channel",
-  "join_model": "invite_link",
-  "created_at": "2024-01-01T00:00:00Z",
-  "updated_at": "2024-01-01T00:00:00Z"
+	"_id": "507f1f77bcf86cd799439012",
+	"chat_id": -1001234567890,
+	"name": "Premium Channel",
+	"join_model": "invite_link",
+	"created_at": "2024-01-01T00:00:00Z",
+	"updated_at": "2024-01-01T00:00:00Z"
 }
 ```
 
@@ -230,17 +233,18 @@ Represents a user's membership to a channel.
 
 ```json
 {
-  "_id": "507f1f77bcf86cd799439013",
-  "user_id": "507f1f77bcf86cd799439011",
-  "chat_id": -1001234567890,
-  "status": "active",
-  "current_period_end": "2024-02-01T00:00:00Z",
-  "created_at": "2024-01-01T00:00:00Z",
-  "updated_at": "2024-01-01T00:00:00Z"
+	"_id": "507f1f77bcf86cd799439013",
+	"user_id": "507f1f77bcf86cd799439011",
+	"chat_id": -1001234567890,
+	"status": "active",
+	"current_period_end": "2024-02-01T00:00:00Z",
+	"created_at": "2024-01-01T00:00:00Z",
+	"updated_at": "2024-01-01T00:00:00Z"
 }
 ```
 
 **Membership Statuses:**
+
 - `active`: User has active access
 - `cancelled`: User cancelled but still has access until period end
 - `expired`: Membership has expired
@@ -251,13 +255,13 @@ Represents a Telegram invite link.
 
 ```json
 {
-  "_id": "507f1f77bcf86cd799439014",
-  "user_id": "507f1f77bcf86cd799439011",
-  "chat_id": -1001234567890,
-  "invite_link": "https://t.me/+abc123xyz",
-  "expire_at": "2024-01-01T01:00:00Z",
-  "member_limit": 1,
-  "created_at": "2024-01-01T00:00:00Z"
+	"_id": "507f1f77bcf86cd799439014",
+	"user_id": "507f1f77bcf86cd799439011",
+	"chat_id": -1001234567890,
+	"invite_link": "https://t.me/+abc123xyz",
+	"expire_at": "2024-01-01T01:00:00Z",
+	"member_limit": 1,
+	"created_at": "2024-01-01T00:00:00Z"
 }
 ```
 
@@ -271,19 +275,19 @@ The API uses standard HTTP status codes and returns error details in JSON format
 
 ```json
 {
-  "detail": "Error message describing what went wrong"
+	"detail": "Error message describing what went wrong"
 }
 ```
 
 ### Common Error Codes
 
-| Code | Meaning | Common Causes |
-|------|---------|---------------|
-| 400 | Bad Request | Invalid parameters, missing required fields |
-| 404 | Not Found | Resource not found, invalid endpoint |
-| 422 | Unprocessable Entity | Validation error, invalid data types |
-| 500 | Internal Server Error | Server error, database connection issues |
-| 503 | Service Unavailable | Service not initialized, dependencies unavailable |
+| Code | Meaning               | Common Causes                                     |
+| ---- | --------------------- | ------------------------------------------------- |
+| 400  | Bad Request           | Invalid parameters, missing required fields       |
+| 404  | Not Found             | Resource not found, invalid endpoint              |
+| 422  | Unprocessable Entity  | Validation error, invalid data types              |
+| 500  | Internal Server Error | Server error, database connection issues          |
+| 503  | Service Unavailable   | Service not initialized, dependencies unavailable |
 
 ### Error Examples
 
@@ -291,14 +295,14 @@ The API uses standard HTTP status codes and returns error details in JSON format
 
 ```json
 {
-  "detail": [
-    {
-      "type": "missing",
-      "loc": ["body", "chat_ids"],
-      "msg": "Field required",
-      "input": {"ext_user_id": "user123", "period_days": 30}
-    }
-  ]
+	"detail": [
+		{
+			"type": "missing",
+			"loc": ["body", "chat_ids"],
+			"msg": "Field required",
+			"input": { "ext_user_id": "user123", "period_days": 30 }
+		}
+	]
 }
 ```
 
@@ -306,7 +310,7 @@ The API uses standard HTTP status codes and returns error details in JSON format
 
 ```json
 {
-  "detail": "Telegram services not initialized"
+	"detail": "Telegram services not initialized"
 }
 ```
 

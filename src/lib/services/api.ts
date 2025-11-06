@@ -79,14 +79,14 @@ export class ApiClient {
 		return this.request<T>(endpoint, { method: 'GET' });
 	}
 
-	async post<T>(endpoint: string, data?: any): Promise<StandardResponse<T>> {
+	async post<T>(endpoint: string, data?: unknown): Promise<StandardResponse<T>> {
 		return this.request<T>(endpoint, {
 			method: 'POST',
 			body: data ? JSON.stringify(data) : undefined
 		});
 	}
 
-	async put<T>(endpoint: string, data?: any): Promise<StandardResponse<T>> {
+	async put<T>(endpoint: string, data?: unknown): Promise<StandardResponse<T>> {
 		return this.request<T>(endpoint, {
 			method: 'PUT',
 			body: data ? JSON.stringify(data) : undefined

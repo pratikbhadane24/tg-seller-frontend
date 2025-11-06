@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { resolve } from '$app/paths';
 	import { authService } from '$lib/services/auth.service';
 
 	const navItems = [
@@ -18,26 +19,26 @@
 	}
 </script>
 
-<nav class="bg-[var(--bg-card)] border-b border-[var(--border-color)] sticky top-0 z-50">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-		<div class="flex items-center justify-between h-16">
+<nav class="sticky top-0 z-50 border-b border-[var(--border-color)] bg-[var(--bg-card)]">
+	<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+		<div class="flex h-16 items-center justify-between">
 			<!-- Logo -->
 			<div class="flex-shrink-0">
-				<a href="/dashboard" class="flex items-center gap-2">
-					<span class="text-2xl font-bold cyber-text-glow" style="color: var(--cyber-blue)">
+				<a href={resolve('/dashboard')} class="flex items-center gap-2">
+					<span class="cyber-text-glow text-2xl font-bold" style="color: var(--cyber-blue)">
 						TG SELLER
 					</span>
 				</a>
 			</div>
 
 			<!-- Navigation Links -->
-			<div class="hidden md:flex items-center space-x-4">
-				{#each navItems as item}
+			<div class="hidden items-center space-x-4 md:flex">
+				{#each navItems as item (item.path)}
 					<a
-						href={item.path}
-						class="px-3 py-2 rounded-md text-sm font-medium transition-all {$page.url.pathname ===
+						href={resolve(item.path)}
+						class="rounded-md px-3 py-2 text-sm font-medium transition-all {$page.url.pathname ===
 						item.path
-							? 'bg-[var(--cyber-blue)] bg-opacity-20 text-[var(--cyber-blue)] border border-[var(--cyber-blue)]'
+							? 'bg-opacity-20 border border-[var(--cyber-blue)] bg-[var(--cyber-blue)] text-[var(--cyber-blue)]'
 							: 'text-gray-300 hover:bg-[var(--bg-tertiary)] hover:text-white'}"
 					>
 						<span class="mr-1">{item.icon}</span>
@@ -50,7 +51,7 @@
 			<div>
 				<button
 					onclick={handleLogout}
-					class="px-4 py-2 text-sm font-medium text-[var(--cyber-red)] border border-[var(--cyber-red)] rounded hover:bg-[var(--cyber-red)] hover:bg-opacity-20 transition-all"
+					class="hover:bg-opacity-20 rounded border border-[var(--cyber-red)] px-4 py-2 text-sm font-medium text-[var(--cyber-red)] transition-all hover:bg-[var(--cyber-red)]"
 				>
 					Logout
 				</button>
@@ -59,14 +60,13 @@
 	</div>
 
 	<!-- Mobile Menu -->
-	<div class="md:hidden border-t border-[var(--border-color)]">
-		<div class="px-2 pt-2 pb-3 space-y-1">
-			{#each navItems as item}
+	<div class="border-t border-[var(--border-color)] md:hidden">
+		<div class="space-y-1 px-2 pt-2 pb-3">
+			{#each navItems as item (item.path)}
 				<a
-					href={item.path}
-					class="block px-3 py-2 rounded-md text-base font-medium {$page.url.pathname ===
-					item.path
-						? 'bg-[var(--cyber-blue)] bg-opacity-20 text-[var(--cyber-blue)]'
+					href={resolve(item.path)}
+					class="block rounded-md px-3 py-2 text-base font-medium {$page.url.pathname === item.path
+						? 'bg-opacity-20 bg-[var(--cyber-blue)] text-[var(--cyber-blue)]'
 						: 'text-gray-300 hover:bg-[var(--bg-tertiary)] hover:text-white'}"
 				>
 					<span class="mr-2">{item.icon}</span>

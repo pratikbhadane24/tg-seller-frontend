@@ -5,7 +5,7 @@
 		disabled?: boolean;
 		loading?: boolean;
 		onclick?: () => void;
-		children: any;
+		children: unknown;
 	}
 
 	let {
@@ -30,14 +30,14 @@
 <button
 	{type}
 	class="cyber-button {variantClasses[variant]} {disabled || loading
-		? 'opacity-50 cursor-not-allowed'
+		? 'cursor-not-allowed opacity-50'
 		: ''}"
 	{disabled}
 	{onclick}
 >
 	{#if loading}
 		<span class="flex items-center gap-2">
-			<div class="spinner w-4 h-4 border-2"></div>
+			<div class="spinner h-4 w-4 border-2"></div>
 			Loading...
 		</span>
 	{:else}

@@ -161,7 +161,7 @@ export interface GrantAccessResponse {
 	user_id: string;
 	invites: Record<string, string>;
 	period_end: string;
-	errors: any;
+	errors: unknown;
 }
 
 // Webhook

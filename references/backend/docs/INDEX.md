@@ -64,38 +64,43 @@ Welcome to the Telegram Paid Subscriber Service - Multi-User SaaS Platform docum
 
 ### Quick Reference
 
-| Document | Purpose | Audience | Length |
-|----------|---------|----------|--------|
-| [SELLER_QUICKSTART.md](SELLER_QUICKSTART.md) | Get started as a seller | Sellers | 12K words |
-| [MULTI_USER_API.md](MULTI_USER_API.md) | Complete API reference | Developers | 18K words |
-| [IMPLEMENTATION_SUMMARY.md](../IMPLEMENTATION_SUMMARY.md) | Technical overview | Platform owners | 14K words |
-| [setup.md](setup.md) | Installation & setup | DevOps | 5K words |
-| [api.md](api.md) | Original Telegram APIs | Developers | 4K words |
-| [user-guide.md](user-guide.md) | Daily operations | All users | 6K words |
+| Document                                                  | Purpose                 | Audience        | Length    |
+| --------------------------------------------------------- | ----------------------- | --------------- | --------- |
+| [SELLER_QUICKSTART.md](SELLER_QUICKSTART.md)              | Get started as a seller | Sellers         | 12K words |
+| [MULTI_USER_API.md](MULTI_USER_API.md)                    | Complete API reference  | Developers      | 18K words |
+| [IMPLEMENTATION_SUMMARY.md](../IMPLEMENTATION_SUMMARY.md) | Technical overview      | Platform owners | 14K words |
+| [setup.md](setup.md)                                      | Installation & setup    | DevOps          | 5K words  |
+| [api.md](api.md)                                          | Original Telegram APIs  | Developers      | 4K words  |
+| [user-guide.md](user-guide.md)                            | Daily operations        | All users       | 6K words  |
 
 ### By Topic
 
 #### Authentication & Security
+
 - [API Authentication](MULTI_USER_API.md#authentication) - JWT and API keys
 - [Webhook Signatures](MULTI_USER_API.md#webhook-system) - HMAC verification
 - [Security Best Practices](SELLER_QUICKSTART.md#security)
 
 #### Payment Processing
+
 - [Stripe Integration](MULTI_USER_API.md#payment-apis) - Complete guide
 - [Payment Routing](SELLER_QUICKSTART.md#4-set-up-payments) - Platform vs Seller
 - [Checkout Creation](MULTI_USER_API.md#create-checkout-session) - Step-by-step
 
 #### Channel Management
+
 - [Register Channel](SELLER_QUICKSTART.md#3-register-your-telegram-channel) - Quick start
 - [Grant Access](MULTI_USER_API.md#grant-access-existing-api) - API reference
 - [Member Management](SELLER_QUICKSTART.md#list-members) - Dashboard
 
 #### Webhooks
+
 - [Webhook Setup](SELLER_QUICKSTART.md#webhooks) - Configuration
 - [Event Handling](MULTI_USER_API.md#webhook-events) - Event types
 - [Signature Verification](SELLER_QUICKSTART.md#handle-webhook-events) - Security
 
 #### Integration
+
 - [Python Examples](MULTI_USER_API.md#integration-guide) - Complete flows
 - [Best Practices](SELLER_QUICKSTART.md#best-practices) - Guidelines
 - [Error Handling](SELLER_QUICKSTART.md#error-handling) - Retry logic
@@ -103,9 +108,11 @@ Welcome to the Telegram Paid Subscriber Service - Multi-User SaaS Platform docum
 ## 🎯 Common Use Cases
 
 ### Use Case 1: Seller Onboarding
+
 **Goal:** Set up as a new seller and start selling
 
 **Steps:**
+
 1. Read [Seller Quick Start](SELLER_QUICKSTART.md#quick-start)
 2. Register account → [Registration](SELLER_QUICKSTART.md#1-register-your-account)
 3. Add channel → [Channel Setup](SELLER_QUICKSTART.md#3-register-your-telegram-channel)
@@ -114,9 +121,11 @@ Welcome to the Telegram Paid Subscriber Service - Multi-User SaaS Platform docum
 **Time:** ~15 minutes
 
 ### Use Case 2: Customer Subscription
+
 **Goal:** Implement customer checkout flow
 
 **Steps:**
+
 1. Review [Payment APIs](MULTI_USER_API.md#payment-apis)
 2. Create checkout → [Example](SELLER_QUICKSTART.md#5-create-your-first-checkout)
 3. Handle webhook → [Stripe Webhook](MULTI_USER_API.md#stripe-webhook)
@@ -125,9 +134,11 @@ Welcome to the Telegram Paid Subscriber Service - Multi-User SaaS Platform docum
 **Time:** ~30 minutes
 
 ### Use Case 3: Dashboard Integration
+
 **Goal:** Build seller dashboard
 
 **Steps:**
+
 1. Authenticate → [Login](MULTI_USER_API.md#login)
 2. Get stats → [Statistics](MULTI_USER_API.md#get-statistics)
 3. List members → [Members](MULTI_USER_API.md#list-members)
@@ -136,9 +147,11 @@ Welcome to the Telegram Paid Subscriber Service - Multi-User SaaS Platform docum
 **Time:** ~20 minutes
 
 ### Use Case 4: Webhook Integration
+
 **Goal:** Receive real-time events
 
 **Steps:**
+
 1. Create webhook → [Setup](SELLER_QUICKSTART.md#create-webhook)
 2. Implement handler → [Example](SELLER_QUICKSTART.md#handle-webhook-events)
 3. Verify signatures → [Security](MULTI_USER_API.md#webhook-signature-verification)
@@ -151,6 +164,7 @@ Welcome to the Telegram Paid Subscriber Service - Multi-User SaaS Platform docum
 ### API Endpoints
 
 **Seller Management:**
+
 ```
 POST   /api/sellers/register          # Register new seller
 POST   /api/sellers/login              # Get access tokens
@@ -162,6 +176,7 @@ POST   /api/sellers/webhooks           # Create webhook
 ```
 
 **Payments:**
+
 ```
 POST   /api/payments/checkout          # Create Stripe checkout
 POST   /api/payments/payment-intent    # Create payment intent
@@ -169,6 +184,7 @@ POST   /api/payments/webhook           # Stripe webhook
 ```
 
 **Customer Access:**
+
 ```
 POST   /api/telegram/grant-access      # Grant channel access
 POST   /api/telegram/force-remove      # Remove member
@@ -177,6 +193,7 @@ POST   /api/telegram/force-remove      # Remove member
 ### Configuration
 
 **Required Environment Variables:**
+
 ```env
 TELEGRAM_BOT_TOKEN=...          # Bot token
 MONGODB_URI=...                 # Database URI
@@ -185,6 +202,7 @@ JWT_SECRET_KEY=...              # JWT secret
 ```
 
 **Optional:**
+
 ```env
 STRIPE_PUBLISHABLE_KEY=...      # Stripe public key
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
@@ -194,12 +212,14 @@ JWT_REFRESH_TOKEN_EXPIRE_DAYS=7
 ### Authentication
 
 **JWT Token:**
+
 ```bash
 curl -H "Authorization: Bearer eyJ..." \
   https://api.example.com/api/sellers/me
 ```
 
 **API Key:**
+
 ```bash
 curl -H "X-API-Key: sk_..." \
   https://api.example.com/api/sellers/stats

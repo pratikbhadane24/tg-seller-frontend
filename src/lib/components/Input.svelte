@@ -33,7 +33,7 @@
 </script>
 
 <div class="mb-4">
-	<label for={id} class="block text-sm font-medium text-gray-300 mb-2 uppercase tracking-wide">
+	<label for={id} class="mb-2 block text-sm font-medium tracking-wide text-gray-300 uppercase">
 		{label}
 		{#if required}
 			<span class="text-[var(--cyber-pink)]">*</span>
@@ -50,6 +50,6 @@
 		class="cyber-input {error ? 'border-[var(--cyber-red)]' : ''}"
 	/>
 	{#if error}
-		<p class="text-sm text-[var(--cyber-red)] mt-1">{error}</p>
+		<p class="mt-1 text-sm text-[var(--cyber-red)]">{error}</p>
 	{/if}
 </div>
